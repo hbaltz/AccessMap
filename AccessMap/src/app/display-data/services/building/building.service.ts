@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiGeolocationService } from '../api/api-geolocation.service';
 import { map, Observable } from 'rxjs';
-import { MAP } from '../../map/models/map.model';
+import { DATA } from '../../models/map.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { MappingActiviteIcon } from './activiteIcon.mapping';
 export class BuildingService {
   constructor(private apiGeolocationService: ApiGeolocationService) {}
 
-  public getBuildings(): Observable<MAP.Buidling[]> {
+  public getBuildings(): Observable<DATA.Buidling[]> {
     return this.apiGeolocationService.get_buildings_pagined(100).pipe(
       map((buildingFeatureCollection) => {
         return (

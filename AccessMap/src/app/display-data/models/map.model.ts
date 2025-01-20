@@ -1,6 +1,6 @@
 import { Position } from 'geojson';
 
-export namespace MAP {
+export namespace DATA {
   export interface Buidling {
     id: string;
     name: string;
