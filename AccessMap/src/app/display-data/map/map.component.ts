@@ -1,9 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import * as L from 'leaflet';
 import { GeolocationService } from '../services/geolocation/geolocation.service';
-import { BuildingService } from '../services/building/building.service';
-import { Subscription } from 'rxjs';
 import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster';
+import { DATA } from '../models/map.model';
 
 @Component({
   selector: 'app-map',
@@ -11,16 +16,13 @@ import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster'
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnInit, OnDestroy {
-  private subcriptionArray: Subscription[] = [];
+export class MapComponent implements OnInit, OnChanges {
+  @Input() public buildingArray: DATA.Buidling[] = [];
 
   private map!: L.Map;
   private buildingClusterData!: L.MarkerClusterGroup;
 
-  constructor(
-    private geolocationService: GeolocationService,
-    private buildingService: BuildingService
-  ) {}
+  constructor(private geolocationService: GeolocationService) {}
 
   public ngOnInit(): void {
     this.initializeMap();
@@ -35,8 +37,10 @@ export class MapComponent implements OnInit, OnDestroy {
       .catch(console.error);
   }
 
-  public ngOnDestroy(): void {
-    this.subcriptionArray.forEach((s) => s.unsubscribe());
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes['buildingArray']) {
+      this.displayBuildginsOnMap();
+    }
   }
 
   private initializeMap(): void {
@@ -57,23 +61,21 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   private displayBuildginsOnMap(): void {
-    this.subcriptionArray.push(
-      this.buildingService.getBuildings().subscribe((builgingArray) => {
-        builgingArray.forEach((building) => {
-          const marker = L.marker(
-            [building.gps_coord[1], building.gps_coord[0]],
-            {
-              icon: L.divIcon({
-                html: `<i class="fas fa-${building.icon} blue-dark p-0"></i>`,
-                iconSize: [30, 30],
-                className: 'icon bg-white',
-              }),
-            }
-          ).bindPopup(`${building.activite} - ${building.name}`);
-          this.buildingClusterData.addLayer(marker);
-        });
-        this.buildingClusterData.addTo(this.map);
-      })
-    );
+    if (this.buildingArray.length !== 0) {
+      this.buildingArray.forEach((building) => {
+        const marker = L.marker(
+          [building.gps_coord[1], building.gps_coord[0]],
+          {
+            icon: L.divIcon({
+              html: `<i class="fas fa-${building.icon} blue-dark p-0"></i>`,
+              iconSize: [30, 30],
+              className: 'icon bg-white',
+            }),
+          }
+        ).bindPopup(`${building.activite} - ${building.name}`);
+        this.buildingClusterData.addLayer(marker);
+      });
+      this.buildingClusterData.addTo(this.map);
+    }
   }
 }
