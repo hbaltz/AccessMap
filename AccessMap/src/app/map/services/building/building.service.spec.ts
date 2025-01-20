@@ -71,11 +71,15 @@ describe('BuildingService', () => {
           id: '1',
           name: 'Hotel',
           gps_coord: [5.384739, 49.163546],
+          icon: 'bed',
+          activite: 'Hôtel',
         },
         {
           id: '2',
           name: 'Restaurant',
           gps_coord: [6.900571, 48.275392],
+          icon: 'utensils',
+          activite: 'Restaurant',
         },
       ];
 
