@@ -60,10 +60,16 @@ export class MapComponent implements OnInit, OnDestroy {
     this.subcriptionArray.push(
       this.buildingService.getBuildings().subscribe((builgingArray) => {
         builgingArray.forEach((building) => {
-          const marker = L.marker([
-            building.gps_coord[1],
-            building.gps_coord[0],
-          ]).bindPopup(building.name || 'Unknown');
+          const marker = L.marker(
+            [building.gps_coord[1], building.gps_coord[0]],
+            {
+              icon: L.divIcon({
+                html: `<i class="fas fa-${building.icon} blue-dark p-0"></i>`,
+                iconSize: [30, 30],
+                className: 'icon bg-white',
+              }),
+            }
+          ).bindPopup(`${building.activite} - ${building.name}`);
           this.buildingClusterData.addLayer(marker);
         });
         this.buildingClusterData.addTo(this.map);
