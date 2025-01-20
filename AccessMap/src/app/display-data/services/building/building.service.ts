@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiGeolocationService } from '../api/api-geolocation.service';
 import { map, Observable } from 'rxjs';
-import { MAP } from '../../models/map.model';
+import { MAP } from '../../map/models/map.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
 
 @Injectable({

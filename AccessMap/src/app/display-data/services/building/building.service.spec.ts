@@ -6,7 +6,7 @@ import {
   ApiGeolocationService,
 } from '../api/api-geolocation.service';
 import { of } from 'rxjs';
-import { MAP } from '../../models/map.model';
+import { MAP } from '../../map/models/map.model';
 
 const MOCCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   type: 'FeatureCollection',
