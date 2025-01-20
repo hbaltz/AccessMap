@@ -1,0 +1,12 @@
+.container {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+
+.column-one {
+  grid-column: 1;
+}
+
+.column-two {
+  grid-column: auto;
+}

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as L from 'leaflet';
-import { GeolocationService } from './services/geolocation/geolocation.service';
-import { BuildingService } from './services/building/building.service';
+import { GeolocationService } from '../services/geolocation/geolocation.service';
+import { BuildingService } from '../services/building/building.service';
 import { Subscription } from 'rxjs';
 import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster';
 

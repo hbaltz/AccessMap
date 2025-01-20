@@ -1,13 +1,29 @@
-/** Varaibles **/
-:root {
-    /** Colors **/
-    --blue-dark: #071C33;
-    /** Background colors **/
-    --bg-white: #ffffff;
+html,
+body {
+  display: block;
+  height: 100%;
+  overflow: hidden
 }
 
+/** Varaibles **/
+:root {
+  /** Colors **/
+  --blue-dark: #071c33;
+  /** Background colors **/
+  --bg-white: #ffffff;
+}
+
+/** Size **/
+.h-100 {
+  height: 100%;
+}
+.w-100 {
+  width: 100%;
+}
+
+/** Map **/
 .leaflet-marker-icon {
-    display: flex;
+  display: flex;
 }
 
 .icon {
@@ -18,7 +34,9 @@
 }
 
 /** Colors **/
-.blue-dark { color: var(--blue-dark) }
+.blue-dark {
+  color: var(--blue-dark);
+}
 
 /** Background colors **/
 .bg-white {
