@@ -2,7 +2,8 @@ html,
 body {
   display: block;
   height: 100%;
-  overflow: hidden
+  overflow: hidden;
+  margin: 0;
 }
 
 /** Varaibles **/
@@ -19,6 +20,11 @@ body {
 }
 .w-100 {
   width: 100%;
+}
+
+/** Overflow **/
+.overflow-y-auto {
+  overflow-y: auto;
 }
 
 /** Map **/
@@ -46,4 +52,61 @@ body {
 /** Padding **/
 .p-0 {
   padding: 0;
+}
+.p-04 {
+  padding: 0.4rem;
+}
+.p-1 {
+  padding: 1rem;
+}
+
+/** Margin **/
+.m-0 {
+  margin: 0;
+}
+.m-1 {
+  margin: 1rem;
+}
+.mt-1 {
+  margin-top: 1rem;
+}
+.mr-1 {
+  margin-right: 1rem;
+}
+.ml-1 {
+  margin-left: 1rem;
+}
+
+.ml-05 {
+  margin-left: 0.5rem;
+}
+
+
+/** Border **/
+.border-blue-dark {
+    border:2px solid var(--blue-dark);
+}
+.border-rounded {
+    border-radius: 5px;
+}
+.round {
+    border-radius: 50%;
+}
+
+/** Display **/
+.d-flex {
+  display: flex;
+}
+
+/** Content **/
+.justify-content-center {
+  justify-content: center;
+}
+.align-content-center {
+  align-content: center;
+}
+
+/** Police **/
+.capitalize {
+    text-transform: capitalize;
 }

@@ -1,4 +1,4 @@
 <div class="container h-100 w-100">
-    <div class="column-one "></div>
-    <app-map class="column-two "></app-map>
+    <app-buildings-list [buildingArray]="buildingArray" class="column-one overflow-y-auto"></app-buildings-list>
+    <app-map [buildingArray]="buildingArray" class="column-two "></app-map>
 </div>

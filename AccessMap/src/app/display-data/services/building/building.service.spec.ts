@@ -6,7 +6,7 @@ import {
   ApiGeolocationService,
 } from '../api/api-geolocation.service';
 import { of } from 'rxjs';
-import { MAP } from '../../map/models/map.model';
+import { DATA } from '../../models/map.model';
 
 const MOCCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   type: 'FeatureCollection',
@@ -60,13 +60,13 @@ describe('BuildingService', () => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
         of(MOCCK_BUILDING_FEATURE_COLLECTION)
       );
-      let resBuildingArray: MAP.Buidling[] = [];
+      let resBuildingArray: DATA.Buidling[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
         resBuildingArray = buildingsArray;
       });
       tick();
 
-      const expectedResult: MAP.Buidling[] = [
+      const expectedResult: DATA.Buidling[] = [
         {
           id: '1',
           name: 'Hotel',
@@ -93,13 +93,13 @@ describe('BuildingService', () => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
         of({ ...MOCCK_BUILDING_FEATURE_COLLECTION, features: null })
       );
-      let resBuildingArray: MAP.Buidling[] = [];
+      let resBuildingArray: DATA.Buidling[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
         resBuildingArray = buildingsArray;
       });
       tick();
 
-      const expectedResult: MAP.Buidling[] = [];
+      const expectedResult: DATA.Buidling[] = [];
 
       expect(
         mockApiGeolocationService.get_buildings_pagined
