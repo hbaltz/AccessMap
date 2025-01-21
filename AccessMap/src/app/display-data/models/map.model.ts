@@ -6,6 +6,7 @@ export namespace DATA {
     name: string;
     icon: string;
     activite: string;
+    adress: string;
     gps_coord: Position;
   }
 }

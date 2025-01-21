@@ -73,6 +73,7 @@ describe('BuildingService', () => {
           gps_coord: [5.384739, 49.163546],
           icon: 'bed',
           activite: 'Hôtel',
+          adress: '12 Rue Test 11111 TestCity',
         },
         {
           id: '2',
@@ -80,6 +81,7 @@ describe('BuildingService', () => {
           gps_coord: [6.900571, 48.275392],
           icon: 'utensils',
           activite: 'Restaurant',
+          adress: '189 Rue Mock 22222 MockCity',
         },
       ];
 
