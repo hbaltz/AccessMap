@@ -19,9 +19,15 @@ export class BuildingService {
   );
 
   private numberOfBuildingsSignal: WritableSignal<number> = signal<number>(0);
+  private numberOfDisplayedBuildingsSignal: WritableSignal<number> =
+    signal<number>(0);
 
   public getNumberOfBuildingsSignal(): Signal<number> {
     return this.numberOfBuildingsSignal;
+  }
+
+  public getNumberOfDsiplayedBuildingsSignal(): Signal<number> {
+    return this.numberOfDisplayedBuildingsSignal;
   }
 
   public getBuildings(): Observable<DATA.Buidling[]> {
@@ -50,7 +56,10 @@ export class BuildingService {
             };
           }) || []
         );
-      })
+      }),
+      tap((buildings) =>
+        this.numberOfDisplayedBuildingsSignal.set(buildings.length)
+      )
     );
   }
 
