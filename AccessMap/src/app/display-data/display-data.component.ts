@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { MapComponent } from './map/map.component';
-import { BuildingsListComponent } from './buildings-list/buildings-list.component';
+import { MapComponent } from './components/map/map.component';
+import { BuildingsListComponent } from './components/buildings-list/buildings-list.component';
 import { Subscription } from 'rxjs';
 import { DATA } from './models/map.model';
 import { BuildingService } from './services/building/building.service';

@@ -7,9 +7,9 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import * as L from 'leaflet';
-import { GeolocationService } from '../services/geolocation/geolocation.service';
+import { GeolocationService } from '../../services/geolocation/geolocation.service';
 import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster';
-import { DATA } from '../models/map.model';
+import { DATA } from '../../models/map.model';
 
 @Component({
   selector: 'app-map',
@@ -24,8 +24,6 @@ export class MapComponent implements OnInit, OnChanges {
 
   private map!: L.Map;
   private buildingClusterData!: L.MarkerClusterGroup;
-
-  constructor() {}
 
   public ngOnInit(): void {
     this.initializeMap();
