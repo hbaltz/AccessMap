@@ -110,3 +110,9 @@ body {
 .capitalize {
     text-transform: capitalize;
 }
+
+/** Tooltip **/
+.tooltip-building {
+    margin-left: 1.2rem;
+    border-radius: 5px;
+}
