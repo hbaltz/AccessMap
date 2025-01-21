@@ -1,6 +1,6 @@
 import { Component, input, InputSignal, Signal } from '@angular/core';
 import { BuildingCardComponent } from '../building-card/building-card.component';
-import { DATA } from '../models/map.model';
+import { DATA } from '../../models/map.model';
 
 @Component({
   selector: 'app-buildings-list',
