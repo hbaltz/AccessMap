@@ -39,4 +39,8 @@ export const MappingActiviteIcon: { [activite: string]: string } = {
   traiteur: 'utensils',
   physiotherapist: 'user-doctor',
   makeup: 'shop',
+  'car-learn': 'car',
+  theatre: 'masks-theater',
+  meat: 'drumstick-bite',
+  'pet-store': 'paw',
 };
