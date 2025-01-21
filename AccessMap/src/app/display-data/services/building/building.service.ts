@@ -18,22 +18,22 @@ export class BuildingService {
     ApiGeolocationService
   );
 
-  private numberOfBuildingsSignal: WritableSignal<number> = signal<number>(0);
-  private numberOfDisplayedBuildingsSignal: WritableSignal<number> =
+  private numberOfBuildings: WritableSignal<number> = signal<number>(0);
+  private numberOfDisplayedBuildings: WritableSignal<number> =
     signal<number>(0);
 
-  public getNumberOfBuildingsSignal(): Signal<number> {
-    return this.numberOfBuildingsSignal;
+  public getnumberOfBuildings(): Signal<number> {
+    return this.numberOfBuildings;
   }
 
-  public getNumberOfDsiplayedBuildingsSignal(): Signal<number> {
-    return this.numberOfDisplayedBuildingsSignal;
+  public getNumberOfDsiplayedBuildings(): Signal<number> {
+    return this.numberOfDisplayedBuildings;
   }
 
   public getBuildings(): Observable<DATA.Buidling[]> {
     return this.apiGeolocationService.get_buildings_pagined(100).pipe(
       tap((buildingFeatureCollection) =>
-        this.numberOfBuildingsSignal.set(buildingFeatureCollection.count)
+        this.numberOfBuildings.set(buildingFeatureCollection.count)
       ),
       map((buildingFeatureCollection) => {
         return (
@@ -57,9 +57,7 @@ export class BuildingService {
           }) || []
         );
       }),
-      tap((buildings) =>
-        this.numberOfDisplayedBuildingsSignal.set(buildings.length)
-      )
+      tap((buildings) => this.numberOfDisplayedBuildings.set(buildings.length))
     );
   }
 

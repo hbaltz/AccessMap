@@ -110,14 +110,14 @@ describe('BuildingService', () => {
     }));
   });
 
-  describe('getNumberOfBuildingsSignal', () => {
+  describe('getnumberOfBuildings', () => {
     it('should return the number of available buildings', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
         of(MOCK_BUILDING_FEATURE_COLLECTION)
       );
       service.getBuildings().subscribe();
       tick();
-      const numberOfBuildginsSignal = service.getNumberOfBuildingsSignal();
+      const numberOfBuildginsSignal = service.getnumberOfBuildings();
       let resNumberOfBuildings: number = numberOfBuildginsSignal();
 
       const expectedResult = 2;
@@ -129,15 +129,14 @@ describe('BuildingService', () => {
     }));
   });
 
-  describe('getNumberOfDsiplayedBuildingsSignal', () => {
+  describe('getNumberOfDsiplayedBuildings', () => {
     it('should return the number of displayed buildings', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
         of(MOCK_BUILDING_FEATURE_COLLECTION)
       );
       service.getBuildings().subscribe();
       tick();
-      const numberOfBuildginsSignal =
-        service.getNumberOfDsiplayedBuildingsSignal();
+      const numberOfBuildginsSignal = service.getNumberOfDsiplayedBuildings();
       let resNumberOfBuildings: number = numberOfBuildginsSignal();
 
       const expectedResult = 2;
