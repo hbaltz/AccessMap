@@ -1,5 +1,6 @@
 import {
   Component,
+  inject,
   Input,
   OnChanges,
   OnInit,
@@ -19,10 +20,12 @@ import { DATA } from '../models/map.model';
 export class MapComponent implements OnInit, OnChanges {
   @Input() public buildingArray: DATA.Buidling[] = [];
 
+  private geolocationService: GeolocationService = inject(GeolocationService);
+
   private map!: L.Map;
   private buildingClusterData!: L.MarkerClusterGroup;
 
-  constructor(private geolocationService: GeolocationService) {}
+  constructor() {}
 
   public ngOnInit(): void {
     this.initializeMap();
