@@ -16,6 +16,8 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
   public buildingArray: DATA.Buidling[] = [];
   public addedBuildingForMap: DATA.Buidling[] = [];
 
+  public isLoading: boolean = false;
+
   private buildingService: BuildingService = inject(BuildingService);
   private subscriptionArray: Subscription[] = [];
 
@@ -33,8 +35,9 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
 
   public launchNextPageLoading(): void {
     this.buildingService.loadNextBuildingsPage().subscribe((buildings) => {
-      this.buildingArray.push(...buildings),
-        (this.addedBuildingForMap = buildings);
+      this.buildingArray.push(...buildings);
+      this.addedBuildingForMap = buildings;
+      this.isLoading = false;
     });
   }
 }
