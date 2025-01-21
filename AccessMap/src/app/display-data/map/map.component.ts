@@ -72,7 +72,12 @@ export class MapComponent implements OnInit, OnChanges {
               className: 'icon bg-white',
             }),
           }
-        ).bindPopup(`${building.activite} - ${building.name}`);
+        ).bindTooltip(`${building.activite} - ${building.name}`, {
+          direction: 'right',
+          className: 'tooltip-building',
+        });
+              
+
         this.buildingClusterData.addLayer(marker);
       });
       this.buildingClusterData.addTo(this.map);
