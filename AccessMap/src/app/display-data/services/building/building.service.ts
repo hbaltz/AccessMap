@@ -1,6 +1,12 @@
-import { inject, Injectable } from '@angular/core';
+import {
+  inject,
+  Injectable,
+  signal,
+  Signal,
+  WritableSignal,
+} from '@angular/core';
 import { ApiGeolocationService } from '../api/api-geolocation.service';
-import { map, Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { DATA } from '../../models/map.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
 
@@ -12,8 +18,17 @@ export class BuildingService {
     ApiGeolocationService
   );
 
+  private numberOfBuildingsSignal: WritableSignal<number> = signal<number>(0);
+
+  public getNumberOfBuildingsSignal(): Signal<number> {
+    return this.numberOfBuildingsSignal;
+  }
+
   public getBuildings(): Observable<DATA.Buidling[]> {
     return this.apiGeolocationService.get_buildings_pagined(100).pipe(
+      tap((buildingFeatureCollection) =>
+        this.numberOfBuildingsSignal.set(buildingFeatureCollection.count)
+      ),
       map((buildingFeatureCollection) => {
         return (
           buildingFeatureCollection.features?.map((f) => {
