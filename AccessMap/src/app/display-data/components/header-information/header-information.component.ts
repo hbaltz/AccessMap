@@ -11,8 +11,8 @@ export class HeaderInformationComponent {
   private buildingService: BuildingService = inject(BuildingService);
 
   public numberOfBuildings: Signal<number> =
-    this.buildingService.getNumberOfBuildingsSignal();
+    this.buildingService.getnumberOfBuildings();
 
   public numberOfDsiplayedBuildings: Signal<number> =
-    this.buildingService.getNumberOfDsiplayedBuildingsSignal();
+    this.buildingService.getNumberOfDsiplayedBuildings();
 }
