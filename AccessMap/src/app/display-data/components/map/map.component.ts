@@ -18,7 +18,8 @@ import { DATA } from '../../models/map.model';
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit, OnChanges {
-  @Input() public buildingArray: DATA.Buidling[] = [];
+  @Input() public initialBuildingArray: DATA.Buidling[] = [];
+  @Input() public newBuildingArray: DATA.Buidling[] = [];
 
   private geolocationService: GeolocationService = inject(GeolocationService);
 
@@ -27,8 +28,6 @@ export class MapComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     this.initializeMap();
-
-    this.displayBuildginsOnMap();
 
     this.geolocationService
       .getCurrentLocation()
@@ -39,8 +38,12 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes['buildingArray']) {
-      this.displayBuildginsOnMap();
+    if (changes['initialBuildingArray']) {
+      this.displayBuildginsOnMap(this.initialBuildingArray);
+    }
+
+    if (changes['newBuildingArray']) {
+      this.displayBuildginsOnMap(this.newBuildingArray);
     }
   }
 
@@ -55,15 +58,16 @@ export class MapComponent implements OnInit, OnChanges {
     this.buildingClusterData = L.markerClusterGroup({
       removeOutsideVisibleBounds: true,
     });
+    this.buildingClusterData.addTo(this.map);
   }
 
   private zoomToLocation(position: GeolocationPosition): void {
     this.map.panTo([position.coords.latitude, position.coords.longitude]);
   }
 
-  private displayBuildginsOnMap(): void {
-    if (this.buildingArray.length !== 0) {
-      this.buildingArray.forEach((building) => {
+  private displayBuildginsOnMap(buildingArray: DATA.Buidling[]): void {
+    if (buildingArray.length !== 0) {
+      buildingArray.forEach((building) => {
         const marker = L.marker(
           [building.gps_coord[1], building.gps_coord[0]],
           {
@@ -82,7 +86,6 @@ export class MapComponent implements OnInit, OnChanges {
         );
         this.buildingClusterData.addLayer(marker);
       });
-      this.buildingClusterData.addTo(this.map);
     }
   }
 }

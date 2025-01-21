@@ -14,6 +14,7 @@ import { HeaderInformationComponent } from './components/header-information/head
 })
 export class DisplayDataComponent implements OnInit, OnDestroy {
   public buildingArray: DATA.Buidling[] = [];
+  public addedBuildingForMap: DATA.Buidling[] = [];
 
   private buildingService: BuildingService = inject(BuildingService);
   private subscriptionArray: Subscription[] = [];
@@ -28,5 +29,12 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.subscriptionArray.forEach((s) => s.unsubscribe());
+  }
+
+  public launchNextPageLoading(): void {
+    this.buildingService.loadNextBuildingsPage().subscribe((buildings) => {
+      this.buildingArray.push(...buildings),
+        (this.addedBuildingForMap = buildings);
+    });
   }
 }
