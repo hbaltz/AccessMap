@@ -1,4 +1,6 @@
 # AccessMap
+![Logo](/AccessMap/src/assets/logo.png)
+
 Une carte interactive listant les lieux accessibles aux PMR
 
 ## Données :
