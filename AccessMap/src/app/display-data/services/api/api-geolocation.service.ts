@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { FeatureCollection, Point } from 'geojson';
@@ -14,9 +14,11 @@ export interface AccesLibreFeatureCollectionResponse
   providedIn: 'root',
 })
 export class ApiGeolocationService {
+  private httpClient: HttpClient = inject(HttpClient);
+
   private acceslibreHeaders!: HttpHeaders;
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     this.acceslibreHeaders = new HttpHeaders({
       accept: 'application/geo+json',
     });

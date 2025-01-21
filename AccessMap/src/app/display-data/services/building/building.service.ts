@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ApiGeolocationService } from '../api/api-geolocation.service';
 import { map, Observable } from 'rxjs';
 import { DATA } from '../../models/map.model';
@@ -8,7 +8,9 @@ import { MappingActiviteIcon } from './activiteIcon.mapping';
   providedIn: 'root',
 })
 export class BuildingService {
-  constructor(private apiGeolocationService: ApiGeolocationService) {}
+  private apiGeolocationService: ApiGeolocationService = inject(
+    ApiGeolocationService
+  );
 
   public getBuildings(): Observable<DATA.Buidling[]> {
     return this.apiGeolocationService.get_buildings_pagined(100).pipe(

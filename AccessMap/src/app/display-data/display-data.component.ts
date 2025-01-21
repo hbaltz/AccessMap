@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MapComponent } from './map/map.component';
 import { BuildingsListComponent } from './buildings-list/buildings-list.component';
 import { Subscription } from 'rxjs';
@@ -14,9 +14,8 @@ import { BuildingService } from './services/building/building.service';
 export class DisplayDataComponent implements OnInit, OnDestroy {
   public buildingArray: DATA.Buidling[] = [];
 
+  private buildingService: BuildingService = inject(BuildingService);
   private subscriptionArray: Subscription[] = [];
-
-  constructor(private buildingService: BuildingService) {}
 
   public ngOnInit(): void {
     this.subscriptionArray.push(
