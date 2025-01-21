@@ -1,14 +1,52 @@
 import {
+  computed,
   inject,
   Injectable,
   signal,
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { ApiGeolocationService } from '../api/api-geolocation.service';
-import { map, Observable, tap } from 'rxjs';
+import {
+  AccesLibreFeatureCollectionResponse,
+  ApiGeolocationService,
+} from '../api/api-geolocation.service';
+import { map, Observable, of, tap, throwError } from 'rxjs';
 import { DATA } from '../../models/map.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
+
+const NUMBER_BUILGINGS_PER_PAGE = 100;
+
+function getIconFromActiviteIcon(activiteIconName: string): string {
+  if (activiteIconName && activiteIconName in MappingActiviteIcon) {
+    return MappingActiviteIcon[activiteIconName];
+  } else {
+    console.error('unknow activite', activiteIconName);
+    return MappingActiviteIcon['default'];
+  }
+}
+
+function transormFeaturesCollectionToBuildings(
+  buildingFeatureCollection: AccesLibreFeatureCollectionResponse
+): DATA.Buidling[] {
+  return (
+    buildingFeatureCollection.features?.map((f) => {
+      return {
+        id: f.properties ? <string>f.properties['uuid'] : '',
+        name: f.properties ? <string>f.properties['nom'] : 'Nom inconnu',
+        icon: f.properties
+          ? getIconFromActiviteIcon(f.properties['activite']['vector_icon'])
+          : MappingActiviteIcon['default'],
+        activite: f.properties
+          ? <string>f.properties['activite']['nom']
+          : 'Activité inconnue',
+        adress: f.properties
+          ? <string>f.properties['adresse']
+          : 'Adresse inconnues',
+        gps_coord: f.geometry.coordinates,
+      };
+    }) || []
+  );
+}
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +59,9 @@ export class BuildingService {
   private numberOfBuildings: WritableSignal<number> = signal<number>(0);
   private numberOfDisplayedBuildings: WritableSignal<number> =
     signal<number>(0);
+  private nextBuildingUrl: WritableSignal<string | null> = signal<
+    string | null
+  >(null);
 
   public getnumberOfBuildings(): Signal<number> {
     return this.numberOfBuildings;
@@ -31,42 +72,41 @@ export class BuildingService {
   }
 
   public getBuildings(): Observable<DATA.Buidling[]> {
-    return this.apiGeolocationService.get_buildings_pagined(100).pipe(
-      tap((buildingFeatureCollection) =>
-        this.numberOfBuildings.set(buildingFeatureCollection.count)
-      ),
-      map((buildingFeatureCollection) => {
-        return (
-          buildingFeatureCollection.features?.map((f) => {
-            return {
-              id: f.properties ? <string>f.properties['uuid'] : '',
-              name: f.properties ? <string>f.properties['nom'] : 'Nom inconnu',
-              icon: f.properties
-                ? this.getIconFromActiviteIcon(
-                    f.properties['activite']['vector_icon']
-                  )
-                : MappingActiviteIcon['default'],
-              activite: f.properties
-                ? <string>f.properties['activite']['nom']
-                : 'Activité inconnue',
-              adress: f.properties
-                ? <string>f.properties['adresse']
-                : 'Adresse inconnues',
-              gps_coord: f.geometry.coordinates,
-            };
-          }) || []
-        );
-      }),
-      tap((buildings) => this.numberOfDisplayedBuildings.set(buildings.length))
-    );
+    return this.apiGeolocationService
+      .get_buildings_pagined(NUMBER_BUILGINGS_PER_PAGE)
+      .pipe(
+        tap((buildingFeatureCollection) => {
+          this.numberOfBuildings.set(buildingFeatureCollection.count);
+          this.nextBuildingUrl.set(buildingFeatureCollection.next);
+        }),
+        map(transormFeaturesCollectionToBuildings),
+        tap((buildings) =>
+          this.numberOfDisplayedBuildings.set(buildings.length)
+        )
+      );
   }
 
-  private getIconFromActiviteIcon(activiteIconName: string): string {
-    if (activiteIconName && activiteIconName in MappingActiviteIcon) {
-      return MappingActiviteIcon[activiteIconName];
+  public hasNextPage(): Signal<boolean> {
+    return computed(() => this.nextBuildingUrl() !== null);
+  }
+
+  public loadNextBuildingsPage(): Observable<DATA.Buidling[]> {
+    if (this.hasNextPage()) {
+      return this.apiGeolocationService
+        .get_buildings_next_page(<string>this.nextBuildingUrl())
+        .pipe(
+          tap((buildingFeatureCollection) => {
+            this.nextBuildingUrl.set(buildingFeatureCollection.next);
+          }),
+          map(transormFeaturesCollectionToBuildings),
+          tap((buildings) =>
+            this.numberOfDisplayedBuildings.set(
+              this.numberOfDisplayedBuildings() + buildings.length
+            )
+          )
+        );
     } else {
-      console.error('unknow activite', activiteIconName);
-      return MappingActiviteIcon['default'];
+      return throwError(() => new Error('No more buildings to load'));
     }
   }
 }

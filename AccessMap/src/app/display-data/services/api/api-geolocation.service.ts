@@ -45,4 +45,12 @@ export class ApiGeolocationService {
       }
     );
   }
+
+  public get_buildings_next_page(
+    url: string
+  ): Observable<AccesLibreFeatureCollectionResponse> {
+    return this.httpClient.get<AccesLibreFeatureCollectionResponse>(url, {
+      headers: this.acceslibreHeaders,
+    });
+  }
 }
