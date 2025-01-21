@@ -1,9 +1,10 @@
 import { Component, inject, Signal } from '@angular/core';
 import { BuildingService } from '../../services/building/building.service';
+import { TooltipDirective } from '../../../directives/tooltip.directive';
 
 @Component({
   selector: 'app-header-information',
-  imports: [],
+  imports: [TooltipDirective],
   templateUrl: './header-information.component.html',
   styleUrl: './header-information.component.css',
 })
