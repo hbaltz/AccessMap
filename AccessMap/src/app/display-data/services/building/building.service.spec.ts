@@ -8,9 +8,9 @@ import {
 import { of } from 'rxjs';
 import { DATA } from '../../models/map.model';
 
-const MOCCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
+const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   type: 'FeatureCollection',
-  count: 537012,
+  count: 2,
   next: null,
   previous: null,
   features: [
@@ -58,7 +58,7 @@ describe('BuildingService', () => {
   describe('getBuildings', () => {
     it('should call get_buildings_pagined and format the data to MAP.Building interface', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of(MOCCK_BUILDING_FEATURE_COLLECTION)
+        of(MOCK_BUILDING_FEATURE_COLLECTION)
       );
       let resBuildingArray: DATA.Buidling[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
@@ -93,7 +93,7 @@ describe('BuildingService', () => {
 
     it('should call return an empty array if the features is null in the api response', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of({ ...MOCCK_BUILDING_FEATURE_COLLECTION, features: null })
+        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: null })
       );
       let resBuildingArray: DATA.Buidling[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
@@ -107,6 +107,25 @@ describe('BuildingService', () => {
         mockApiGeolocationService.get_buildings_pagined
       ).toHaveBeenCalled();
       expect(resBuildingArray).toEqual(expectedResult);
+    }));
+  });
+
+  describe('getNumberOfBuildingsSignal', () => {
+    it('should return the number of available buildings', fakeAsync(() => {
+      mockApiGeolocationService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_FEATURE_COLLECTION)
+      );
+      service.getBuildings().subscribe();
+      tick();
+      const numberOfBuildginsSignal = service.getNumberOfBuildingsSignal();
+      let resNumberOfBuildings: number = numberOfBuildginsSignal();
+
+      const expectedResult = 2;
+
+      expect(
+        mockApiGeolocationService.get_buildings_pagined
+      ).toHaveBeenCalled();
+      expect(resNumberOfBuildings).toEqual(expectedResult);
     }));
   });
 });

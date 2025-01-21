@@ -4,10 +4,11 @@ import { BuildingsListComponent } from './components/buildings-list/buildings-li
 import { Subscription } from 'rxjs';
 import { DATA } from './models/map.model';
 import { BuildingService } from './services/building/building.service';
+import { HeaderInformationComponent } from './components/header-information/header-information.component';
 
 @Component({
   selector: 'app-display-data',
-  imports: [MapComponent, BuildingsListComponent],
+  imports: [MapComponent, BuildingsListComponent, HeaderInformationComponent],
   templateUrl: './display-data.component.html',
   styleUrl: './display-data.component.css',
 })

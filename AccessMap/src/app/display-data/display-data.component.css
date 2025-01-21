@@ -1,12 +1,19 @@
 .container {
   display: grid;
   grid-template-columns: 25% 75%;
+  grid-template-rows: 10% 90%;
 }
 
-.column-one {
+.column-one-row-one {
   grid-column: 1;
+  grid-row: 1;
+}
+.column-one-row-two {
+  grid-column: 1;
+  grid-row: auto;
 }
 
 .column-two {
   grid-column: auto;
+  grid-row: 1/3;
 }
