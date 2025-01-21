@@ -17,7 +17,7 @@ export class BuildingService {
           buildingFeatureCollection.features?.map((f) => {
             return {
               id: f.properties ? <string>f.properties['uuid'] : '',
-              name: f.properties ? <string>f.properties['nom'] : 'Inconnu',
+              name: f.properties ? <string>f.properties['nom'] : 'Nom inconnu',
               icon: f.properties
                 ? this.getIconFromActiviteIcon(
                     f.properties['activite']['vector_icon']
@@ -25,7 +25,10 @@ export class BuildingService {
                 : MappingActiviteIcon['default'],
               activite: f.properties
                 ? <string>f.properties['activite']['nom']
-                : 'Inconnu',
+                : 'Activité inconnue',
+              adress: f.properties
+                ? <string>f.properties['adresse']
+                : 'Adresse inconnues',
               gps_coord: f.geometry.coordinates,
             };
           }) || []
