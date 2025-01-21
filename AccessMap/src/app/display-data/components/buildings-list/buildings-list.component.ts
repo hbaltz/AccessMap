@@ -2,6 +2,7 @@ import {
   Component,
   EventEmitter,
   inject,
+  Input,
   input,
   InputSignal,
   OnDestroy,
@@ -13,29 +14,36 @@ import { BuildingCardComponent } from '../building-card/building-card.component'
 import { DATA } from '../../models/map.model';
 import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
 import { BuildingService } from '../../services/building/building.service';
+import { SpinnerComponent } from '../../../common/spinner/spinner.component';
 
 @Component({
   selector: 'app-buildings-list',
-  imports: [BuildingCardComponent],
+  imports: [BuildingCardComponent, SpinnerComponent],
   templateUrl: './buildings-list.component.html',
   styleUrl: './buildings-list.component.css',
 })
 export class BuildingsListComponent implements OnInit, OnDestroy {
+  @Input() public isLoading: boolean = false;
+  @Output() public isLoadingChange = new EventEmitter<boolean>();
+
+  @Output() public loadMoreData = new EventEmitter<boolean>();
+
+  private buildingService: BuildingService = inject(BuildingService);
+
   public buildingArray: InputSignal<DATA.Buidling[]> =
     input.required<DATA.Buidling[]>();
 
-  @Output() loadMoreData = new EventEmitter<boolean>();
+  public areMoreBuildingAvailable: Signal<boolean> =
+    this.buildingService.hasNextPage();
 
   private subscriptionArray: Subscription[] = [];
-  private buildingService: BuildingService = inject(BuildingService);
-
-  private areMoreBuildingAvailable: Signal<boolean> =
-    this.buildingService.hasNextPage();
 
   public ngOnInit(): void {
     this.subscriptionArray.push(
       this.surveyOnScroll().subscribe((atBottom) => {
-        if (atBottom && this.areMoreBuildingAvailable()) {
+        if (atBottom && !this.isLoading && this.areMoreBuildingAvailable()) {
+          this.isLoadingChange.emit(true);
+          this.isLoading = true;
           this.loadMoreData.emit(true);
         }
       })

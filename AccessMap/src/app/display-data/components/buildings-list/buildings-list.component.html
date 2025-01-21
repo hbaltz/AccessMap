@@ -2,4 +2,12 @@
     @for (building of buildingArray(); track building) {
     <app-building-card [building]="building"></app-building-card>
     }
+    @if(isLoading) {
+    <app-spinner class="mt-1"></app-spinner>
+    }
+    @if(!areMoreBuildingAvailable()) {
+    <div class="d-flex justify-content-center p-0">
+        <p class="text-center m-0 mt-1">Tous les établissements ont été chargées.</p>
+    </div>
+    }
 </div>
