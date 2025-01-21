@@ -10,6 +10,9 @@ import { BuildingService } from '../../services/building/building.service';
 export class HeaderInformationComponent {
   private buildingService: BuildingService = inject(BuildingService);
 
-  public numberOfBuildins: Signal<number> =
+  public numberOfBuildings: Signal<number> =
     this.buildingService.getNumberOfBuildingsSignal();
+
+  public numberOfDsiplayedBuildings: Signal<number> =
+    this.buildingService.getNumberOfDsiplayedBuildingsSignal();
 }
