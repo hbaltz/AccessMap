@@ -1,6 +1,6 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { BuildingService } from './building.service';
+import { BuildingDataService } from './building-data.service';
 import {
   AccesLibreFeatureCollectionResponse,
   ApiGeolocationService,
@@ -39,8 +39,8 @@ const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   ],
 };
 
-describe('BuildingService', () => {
-  let service: BuildingService;
+describe('BuildingDataService', () => {
+  let service: BuildingDataService;
   const mockApiGeolocationService = jasmine.createSpyObj(
     'ApiGeolocationService',
     ['get_buildings_pagined', 'get_buildings_next_page']
@@ -52,7 +52,7 @@ describe('BuildingService', () => {
         { provide: ApiGeolocationService, useValue: mockApiGeolocationService },
       ],
     });
-    service = TestBed.inject(BuildingService);
+    service = TestBed.inject(BuildingDataService);
   });
 
   describe('getBuildings', () => {
