@@ -1,4 +1,4 @@
-<div class="border-blue-dark border-rounded p-1 mt-1 ml-1 mr-1">
+<div class="border-blue-dark border-rounded p-1 mt-1 ml-1 mr-1" [ngClass]="{'bg-aquamarine': selected()}">
     <p class="m-0 d-flex"><i
             class="d-flex justify-content-center align-content-center fas fa-{{building().icon}} blue-dark p-04 border-blue-dark round card-icon"></i>
         <span class="align-content-center ml-05">{{building().activite}}</span>

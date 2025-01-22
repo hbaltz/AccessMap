@@ -1,12 +1,14 @@
 import { Component, input, InputSignal, Signal } from '@angular/core';
 import { DATA } from '../../models/map.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-building-card',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './building-card.component.html',
   styleUrl: './building-card.component.css',
 })
 export class BuildingCardComponent {
   public building: InputSignal<DATA.Buidling> = input.required<DATA.Buidling>();
+  public selected: InputSignal<boolean> = input<boolean>(false);
 }

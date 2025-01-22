@@ -1,5 +1,6 @@
 import {
   Component,
+  effect,
   EventEmitter,
   inject,
   Input,
@@ -15,6 +16,7 @@ import { DATA } from '../../models/map.model';
 import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
 import { BuildingDataService } from '../../services/building-data/building-data.service';
 import { SpinnerComponent } from '../../../common/spinner/spinner.component';
+import { BuildingSelectionService } from '../../services/building-selection/building-selection.service';
 
 @Component({
   selector: 'app-buildings-list',
@@ -30,14 +32,28 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
 
   private buildingDataService: BuildingDataService =
     inject(BuildingDataService);
+  private buildingSelectionService: BuildingSelectionService = inject(
+    BuildingSelectionService
+  );
 
   public buildingArray: InputSignal<DATA.Buidling[]> =
     input.required<DATA.Buidling[]>();
 
   public areMoreBuildingAvailable: Signal<boolean> =
     this.buildingDataService.hasNextPage();
+  public selectedBuildingId: Signal<string | null> =
+    this.buildingSelectionService.getSelectedBuildingId();
 
   private subscriptionArray: Subscription[] = [];
+
+  constructor() {
+    effect(() => {
+      const selectedBuildingId = this.selectedBuildingId();
+      if (selectedBuildingId) {
+        this.scrollToBuildingItem(selectedBuildingId);
+      }
+    });
+  }
 
   public ngOnInit(): void {
     this.subscriptionArray.push(
@@ -68,5 +84,12 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
         );
       })
     );
+  }
+
+  private scrollToBuildingItem(buildingId: string): void {
+    const element = document.getElementById(`building-${buildingId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 }
