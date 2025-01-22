@@ -13,6 +13,7 @@ body {
   --light-grey: #d3d3d3;
   /** Background colors **/
   --bg-white: #ffffff;
+  --bg-aquamarine: #7fffd4;
 }
 
 /** Size **/
@@ -51,6 +52,9 @@ body {
 /** Background colors **/
 .bg-white {
   background-color: var(--bg-white);
+}
+.bg-aquamarine {
+  background-color: var(--bg-aquamarine);
 }
 
 /** Padding **/
