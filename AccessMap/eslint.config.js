@@ -30,7 +30,8 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
-      "@typescript-eslint/no-namespace": "off"
+      "@typescript-eslint/no-namespace": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
     },
   },
   {
@@ -39,7 +40,6 @@ module.exports = tseslint.config(
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
     ],
-    rules: {
-    },
-  }, 
+    rules: {},
+  },
 );
