@@ -136,6 +136,12 @@ export class MapComponent implements OnInit, OnChanges {
       }
 
       this.updateMarkerClass(marker);
+
+      // If the marker is part of a cluster, spiderfy it
+      const parentMarker = this.buildingClusterData.getVisibleParent(marker);
+      if (parentMarker instanceof L.MarkerCluster) {
+        parentMarker.spiderfy();
+      }
     }
   }
 
