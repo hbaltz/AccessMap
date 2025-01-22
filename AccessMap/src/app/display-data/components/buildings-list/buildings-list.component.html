@@ -1,7 +1,7 @@
 <div id="list-buildings-container" class="overflow-y-auto">
     @for (building of buildingArray(); track building) {
-    <app-building-card [id]="'building-' + building.id" [building]="building"
-        [selected]="building.id === selectedBuildingId()"></app-building-card>
+    <app-building-card [id]="'building-' + building.id" class="cursor-pointer" [building]="building"
+        [selected]="building.id === selectedBuildingId()" (click)="selectBuilding(building.id)"></app-building-card>
     }
     @if(isLoading) {
     <app-spinner class="mt-1"></app-spinner>
