@@ -3,7 +3,7 @@ import { MapComponent } from './components/map/map.component';
 import { BuildingsListComponent } from './components/buildings-list/buildings-list.component';
 import { Subscription } from 'rxjs';
 import { DATA } from './models/map.model';
-import { BuildingService } from './services/building/building.service';
+import { BuildingDataService } from './services/building-data/building-data.service';
 import { HeaderInformationComponent } from './components/header-information/header-information.component';
 
 @Component({
@@ -18,12 +18,13 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
 
   public isLoading: boolean = false;
 
-  private buildingService: BuildingService = inject(BuildingService);
+  private buildingDataService: BuildingDataService =
+    inject(BuildingDataService);
   private subscriptionArray: Subscription[] = [];
 
   public ngOnInit(): void {
     this.subscriptionArray.push(
-      this.buildingService
+      this.buildingDataService
         .getBuildings()
         .subscribe((buildings) => (this.buildingArray = buildings))
     );
@@ -34,7 +35,7 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
   }
 
   public launchNextPageLoading(): void {
-    this.buildingService.loadNextBuildingsPage().subscribe((buildings) => {
+    this.buildingDataService.loadNextBuildingsPage().subscribe((buildings) => {
       this.buildingArray.push(...buildings);
       this.addedBuildingForMap = buildings;
       this.isLoading = false;

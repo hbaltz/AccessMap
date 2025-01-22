@@ -1,5 +1,5 @@
 import { Component, inject, Signal } from '@angular/core';
-import { BuildingService } from '../../services/building/building.service';
+import { BuildingDataService } from '../../services/building-data/building-data.service';
 import { TooltipDirective } from '../../../directives/tooltip.directive';
 
 @Component({
@@ -9,11 +9,12 @@ import { TooltipDirective } from '../../../directives/tooltip.directive';
   styleUrl: './header-information.component.css',
 })
 export class HeaderInformationComponent {
-  private buildingService: BuildingService = inject(BuildingService);
+  private buildingDataService: BuildingDataService =
+    inject(BuildingDataService);
 
   public numberOfBuildings: Signal<number> =
-    this.buildingService.getnumberOfBuildings();
+    this.buildingDataService.getnumberOfBuildings();
 
   public numberOfDsiplayedBuildings: Signal<number> =
-    this.buildingService.getNumberOfDsiplayedBuildings();
+    this.buildingDataService.getNumberOfDsiplayedBuildings();
 }

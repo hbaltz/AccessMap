@@ -10,7 +10,7 @@ import {
   AccesLibreFeatureCollectionResponse,
   ApiGeolocationService,
 } from '../api/api-geolocation.service';
-import { map, Observable, of, tap, throwError } from 'rxjs';
+import { map, Observable, tap, throwError } from 'rxjs';
 import { DATA } from '../../models/map.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
 
@@ -48,10 +48,13 @@ function transormFeaturesCollectionToBuildings(
   );
 }
 
+/**
+ * Responsible of the data management of the buildings
+ */
 @Injectable({
   providedIn: 'root',
 })
-export class BuildingService {
+export class BuildingDataService {
   private apiGeolocationService: ApiGeolocationService = inject(
     ApiGeolocationService
   );

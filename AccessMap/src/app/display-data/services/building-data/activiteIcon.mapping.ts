@@ -62,4 +62,7 @@ export const MappingActiviteIcon: { [activite: string]: string } = {
   'furniture-store': 'couch',
   cheese: 'cheese',
   'electronics-store': 'tv',
+  'hardware-store': 'tools',
+  library: 'book',
+  'jewelry-store': 'ring',
 };

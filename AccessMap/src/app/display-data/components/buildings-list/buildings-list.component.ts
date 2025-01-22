@@ -13,7 +13,7 @@ import {
 import { BuildingCardComponent } from '../building-card/building-card.component';
 import { DATA } from '../../models/map.model';
 import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
-import { BuildingService } from '../../services/building/building.service';
+import { BuildingDataService } from '../../services/building-data/building-data.service';
 import { SpinnerComponent } from '../../../common/spinner/spinner.component';
 
 @Component({
@@ -28,13 +28,14 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
 
   @Output() public loadMoreData = new EventEmitter<boolean>();
 
-  private buildingService: BuildingService = inject(BuildingService);
+  private buildingDataService: BuildingDataService =
+    inject(BuildingDataService);
 
   public buildingArray: InputSignal<DATA.Buidling[]> =
     input.required<DATA.Buidling[]>();
 
   public areMoreBuildingAvailable: Signal<boolean> =
-    this.buildingService.hasNextPage();
+    this.buildingDataService.hasNextPage();
 
   private subscriptionArray: Subscription[] = [];
 
