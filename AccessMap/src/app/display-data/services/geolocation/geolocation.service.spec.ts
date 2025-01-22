@@ -19,7 +19,7 @@ describe('GeolocationService', () => {
             longitude: 42.7138,
           };
 
-          //@ts-expect-error: no need toJson property
+          //@ts-ignore
           const position: GeolocationPosition = {
             coords: coords as GeolocationCoordinates,
             timestamp: Date.now(),
@@ -44,7 +44,7 @@ describe('GeolocationService', () => {
       };
 
       spyOn(navigator.geolocation, 'getCurrentPosition').and.callFake(
-        (successCallback, errorCallback) => {
+        (_successCallback, errorCallback) => {
           if (errorCallback) {
             errorCallback(
               mockGeolocationPostiionError as GeolocationPositionError,
@@ -60,5 +60,19 @@ describe('GeolocationService', () => {
         expect(error).toEqual(mockGeolocationPostiionError);
       }
     });
+  });
+
+  it('should reject when geolocation is not supported by the browser', async () => {
+    Object.defineProperty(navigator, 'geolocation', {
+      value: undefined,
+      writable: true,
+    });
+
+    try {
+      await service.getCurrentLocation();
+      fail('The promise should have been rejected');
+    } catch (error) {
+      expect(error).toBe('Geolocation is not supported by your browser');
+    }
   });
 });

@@ -33,12 +33,18 @@ function transormFeaturesCollectionToBuildings(
       return {
         id: f.properties ? (f.properties['uuid'] as string) : '',
         name: f.properties ? (f.properties['nom'] as string) : 'Nom inconnu',
-        icon: f.properties
-          ? getIconFromActiviteIcon(f.properties['activite']['vector_icon'])
-          : MappingActiviteIcon['default'],
-        activite: f.properties
-          ? (f.properties['activite']['nom'] as string)
-          : 'Activité inconnue',
+        icon:
+          f.properties &&
+          f.properties['activite'] &&
+          f.properties['activite']['vector_icon']
+            ? getIconFromActiviteIcon(f.properties['activite']['vector_icon'])
+            : MappingActiviteIcon['default'],
+        activite:
+          f.properties &&
+          f.properties['activite'] &&
+          f.properties['activite']['nom']
+            ? (f.properties['activite']['nom'] as string)
+            : 'Activité inconnue',
         adress: f.properties
           ? (f.properties['adresse'] as string)
           : 'Adresse inconnues',
@@ -94,7 +100,7 @@ export class BuildingDataService {
   }
 
   public loadNextBuildingsPage(): Observable<DATA.Buidling[]> {
-    if (this.hasNextPage()) {
+    if (this.hasNextPage()()) {
       return this.apiGeolocationService
         .get_buildings_next_page(this.nextBuildingUrl() as string)
         .pipe(
