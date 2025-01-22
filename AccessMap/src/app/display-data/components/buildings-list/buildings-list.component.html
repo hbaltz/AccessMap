@@ -1,14 +1,21 @@
 <div id="list-buildings-container" class="overflow-y-auto">
-    @for (building of buildingArray(); track building) {
-    <app-building-card [id]="'building-' + building.id" class="cursor-pointer" [building]="building"
-        [selected]="building.id === selectedBuildingId()" (click)="selectBuilding(building.id)"></app-building-card>
-    }
-    @if(isLoading) {
+  @for (building of buildingArray(); track building) {
+    <app-building-card
+      [id]="'building-' + building.id"
+      class="cursor-pointer"
+      [building]="building"
+      [selected]="building.id === selectedBuildingId()"
+      (click)="selectBuilding(building.id)"
+    ></app-building-card>
+  }
+  @if (isLoading) {
     <app-spinner class="mt-1"></app-spinner>
-    }
-    @if(!areMoreBuildingAvailable()) {
+  }
+  @if (!areMoreBuildingAvailable()) {
     <div class="d-flex justify-content-center p-0">
-        <p class="text-center m-0 mt-1">Tous les établissements ont été chargées.</p>
+      <p class="text-center m-0 mt-1">
+        Tous les établissements ont été chargées.
+      </p>
     </div>
-    }
+  }
 </div>

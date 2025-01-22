@@ -1,4 +1,4 @@
-import { Component, input, InputSignal, Signal } from '@angular/core';
+import { Component, input, InputSignal } from '@angular/core';
 import { DATA } from '../../models/map.model';
 import { CommonModule } from '@angular/common';
 

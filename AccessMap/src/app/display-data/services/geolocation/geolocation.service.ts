@@ -11,7 +11,7 @@ export class GeolocationService {
       } else {
         navigator.geolocation.getCurrentPosition(
           (position: GeolocationPosition) => resolve(position),
-          (error: GeolocationPositionError) => reject(error)
+          (error: GeolocationPositionError) => reject(error),
         );
       }
     });
