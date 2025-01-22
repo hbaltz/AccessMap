@@ -86,6 +86,10 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
     );
   }
 
+  public selectBuilding(buildingId: string): void {
+    this.buildingSelectionService.setSelectedBuildingId(buildingId);
+  }
+
   private scrollToBuildingItem(buildingId: string): void {
     const element = document.getElementById(`building-${buildingId}`);
     if (element) {
