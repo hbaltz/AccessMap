@@ -91,6 +91,44 @@ describe('BuildingDataService', () => {
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
+    it('should call use the default value for icon if the activite is no know', fakeAsync(() => {
+      mockApiGeolocationService.get_buildings_pagined.and.returnValue(
+        of({
+          ...MOCK_BUILDING_FEATURE_COLLECTION,
+          features: [
+            {
+              ...MOCK_BUILDING_FEATURE_COLLECTION.features[0],
+              properties: {
+                ...MOCK_BUILDING_FEATURE_COLLECTION.features[0].properties,
+                activite: { vector_icon: 'unknown' },
+              },
+            },
+          ],
+        }),
+      );
+      let resBuildingArray: DATA.Buidling[] = [];
+      service.getBuildings().subscribe((buildingsArray) => {
+        resBuildingArray = buildingsArray;
+      });
+      tick();
+
+      const expectedResult: DATA.Buidling[] = [
+        {
+          id: '1',
+          name: 'Hotel',
+          gps_coord: [5.384739, 49.163546],
+          icon: 'question',
+          activite: 'Activité inconnue',
+          adress: '12 Rue Test 11111 TestCity',
+        },
+      ];
+
+      expect(
+        mockApiGeolocationService.get_buildings_pagined,
+      ).toHaveBeenCalled();
+      expect(resBuildingArray).toEqual(expectedResult);
+    }));
+
     it('should call return an empty array if the features is null in the api response', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
         of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: null }),
@@ -181,7 +219,16 @@ describe('BuildingDataService', () => {
   });
 
   describe('loadNextBuildingsPage', () => {
+    beforeEach(() => {
+      mockApiGeolocationService.get_buildings_next_page.and.returnValue(
+        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      );
+    });
+
     it('should call get_buildings_next_page and format the data to MAP.Building interface', fakeAsync(() => {
+      mockApiGeolocationService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      );
       mockApiGeolocationService.get_buildings_next_page.and.returnValue(
         of(MOCK_BUILDING_FEATURE_COLLECTION),
       );
@@ -218,4 +265,27 @@ describe('BuildingDataService', () => {
       expect(resBuildingArray).toEqual(expectedResult);
     }));
   });
+
+  it('should throw an error if the nextBuildingUrl is null', fakeAsync(() => {
+    mockApiGeolocationService.get_buildings_pagined.and.returnValue(
+      of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
+    );
+    service.getBuildings().subscribe();
+    tick();
+
+    let errorMessage: string = '';
+    service.loadNextBuildingsPage().subscribe({
+      next: () => {
+        fail('Expected an error, but got data instead');
+      },
+      error: (err) => {
+        errorMessage = err.message;
+      },
+    });
+    tick();
+
+    const expectedResult = 'No more buildings to load';
+
+    expect(errorMessage).toEqual(expectedResult);
+  }));
 });
