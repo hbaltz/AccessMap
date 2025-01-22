@@ -29,12 +29,12 @@ export class MapComponent implements OnInit, OnChanges {
 
   private geolocationService: GeolocationService = inject(GeolocationService);
   private buildingSelectionService: BuildingSelectionService = inject(
-    BuildingSelectionService
+    BuildingSelectionService,
   );
 
   private map!: L.Map;
   private buildingClusterData!: L.MarkerClusterGroup;
-  private mapBuildingIDMarkers: Map<string, L.Marker> = new Map(); // Map of buildingID -> Marker
+  private mapBuildingIDMarkers = new Map<string, L.Marker>(); // Map of buildingID -> Marker
   private selectedBuildingId: Signal<string | null> =
     this.buildingSelectionService.getSelectedBuildingId();
 
@@ -97,21 +97,21 @@ export class MapComponent implements OnInit, OnChanges {
               iconSize: [30, 30],
               className: 'icon bg-white',
             }),
-            //@ts-ignore: Custom property
+            //@ts-expect-error: Custom property
             buildingId: building.id,
-          }
+          },
         );
         marker.bindTooltip(
           `${building.activite} - ${building.name} <br /> ${building.adress}`,
           {
             direction: 'right',
             className: 'tooltip-building',
-          }
+          },
         );
 
         marker.on('click', (event) => {
           this.buildingSelectionService.setSelectedBuildingId(
-            event.target.options.buildingId
+            event.target.options.buildingId,
           );
         });
 

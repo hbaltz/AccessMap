@@ -25,7 +25,7 @@ import { BuildingSelectionService } from '../../services/building-selection/buil
   styleUrl: './buildings-list.component.css',
 })
 export class BuildingsListComponent implements OnInit, OnDestroy {
-  @Input() public isLoading: boolean = false;
+  @Input() public isLoading = false;
   @Output() public isLoadingChange = new EventEmitter<boolean>();
 
   @Output() public loadMoreData = new EventEmitter<boolean>();
@@ -33,7 +33,7 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
   private buildingDataService: BuildingDataService =
     inject(BuildingDataService);
   private buildingSelectionService: BuildingSelectionService = inject(
-    BuildingSelectionService
+    BuildingSelectionService,
   );
 
   public buildingArray: InputSignal<DATA.Buidling[]> =
@@ -63,7 +63,7 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
           this.isLoading = true;
           this.loadMoreData.emit(true);
         }
-      })
+      }),
     );
   }
 
@@ -74,15 +74,15 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
   public surveyOnScroll(): Observable<boolean> {
     return fromEvent(
       document.querySelector('#list-buildings-container')!,
-      'scroll'
+      'scroll',
     ).pipe(
       debounceTime(200),
-      map((event: any) => {
-        const element = event.target;
-        return (
-          element.scrollHeight - element.scrollTop === element.clientHeight
-        );
-      })
+      map((event: Event) => {
+        const element = event.target as Element;
+        return element
+          ? element.scrollHeight - element.scrollTop === element.clientHeight
+          : false;
+      }),
     );
   }
 

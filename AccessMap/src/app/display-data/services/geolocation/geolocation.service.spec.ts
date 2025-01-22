@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { GeolocationService } from './geolocation.service';
 
@@ -19,14 +19,14 @@ describe('GeolocationService', () => {
             longitude: 42.7138,
           };
 
-          //@ts-ignore
+          //@ts-expect-error: no need toJson property
           const position: GeolocationPosition = {
             coords: coords as GeolocationCoordinates,
             timestamp: Date.now(),
           };
 
           successCallback(position);
-        }
+        },
       );
 
       const position = await service.getCurrentLocation();
@@ -47,10 +47,10 @@ describe('GeolocationService', () => {
         (successCallback, errorCallback) => {
           if (errorCallback) {
             errorCallback(
-              mockGeolocationPostiionError as GeolocationPositionError
+              mockGeolocationPostiionError as GeolocationPositionError,
             );
           }
-        }
+        },
       );
 
       try {

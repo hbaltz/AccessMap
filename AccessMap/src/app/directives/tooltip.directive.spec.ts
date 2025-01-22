@@ -39,7 +39,7 @@ describe('TooltipDirective', () => {
       expect(mockRenderer.setAttribute).toHaveBeenCalledWith(
         mockElementRef.nativeElement,
         'data-tooltip',
-        'Test Tooltip'
+        'Test Tooltip',
       );
     });
 
@@ -48,7 +48,7 @@ describe('TooltipDirective', () => {
 
       expect(mockRenderer.addClass).toHaveBeenCalledWith(
         mockElementRef.nativeElement,
-        'tooltip-container'
+        'tooltip-container',
       );
     });
   });
@@ -59,7 +59,7 @@ describe('TooltipDirective', () => {
 
       expect(mockRenderer.removeAttribute).toHaveBeenCalledWith(
         mockElementRef.nativeElement,
-        'data-tooltip'
+        'data-tooltip',
       );
     });
 
@@ -68,7 +68,7 @@ describe('TooltipDirective', () => {
 
       expect(mockRenderer.removeClass).toHaveBeenCalledWith(
         mockElementRef.nativeElement,
-        'tooltip-container'
+        'tooltip-container',
       );
     });
   });

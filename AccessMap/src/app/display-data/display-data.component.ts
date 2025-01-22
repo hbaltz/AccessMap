@@ -16,7 +16,7 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
   public buildingArray: DATA.Buidling[] = [];
   public addedBuildingForMap: DATA.Buidling[] = [];
 
-  public isLoading: boolean = false;
+  public isLoading = false;
 
   private buildingDataService: BuildingDataService =
     inject(BuildingDataService);
@@ -26,7 +26,7 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
     this.subscriptionArray.push(
       this.buildingDataService
         .getBuildings()
-        .subscribe((buildings) => (this.buildingArray = buildings))
+        .subscribe((buildings) => (this.buildingArray = buildings)),
     );
   }
 

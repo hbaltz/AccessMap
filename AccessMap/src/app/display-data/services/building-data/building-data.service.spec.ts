@@ -43,7 +43,7 @@ describe('BuildingDataService', () => {
   let service: BuildingDataService;
   const mockApiGeolocationService = jasmine.createSpyObj(
     'ApiGeolocationService',
-    ['get_buildings_pagined', 'get_buildings_next_page']
+    ['get_buildings_pagined', 'get_buildings_next_page'],
   );
 
   beforeEach(() => {
@@ -58,7 +58,7 @@ describe('BuildingDataService', () => {
   describe('getBuildings', () => {
     it('should call get_buildings_pagined and format the data to MAP.Building interface', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION)
+        of(MOCK_BUILDING_FEATURE_COLLECTION),
       );
       let resBuildingArray: DATA.Buidling[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
@@ -86,14 +86,14 @@ describe('BuildingDataService', () => {
       ];
 
       expect(
-        mockApiGeolocationService.get_buildings_pagined
+        mockApiGeolocationService.get_buildings_pagined,
       ).toHaveBeenCalled();
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
     it('should call return an empty array if the features is null in the api response', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: null })
+        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: null }),
       );
       let resBuildingArray: DATA.Buidling[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
@@ -104,7 +104,7 @@ describe('BuildingDataService', () => {
       const expectedResult: DATA.Buidling[] = [];
 
       expect(
-        mockApiGeolocationService.get_buildings_pagined
+        mockApiGeolocationService.get_buildings_pagined,
       ).toHaveBeenCalled();
       expect(resBuildingArray).toEqual(expectedResult);
     }));
@@ -113,17 +113,17 @@ describe('BuildingDataService', () => {
   describe('getnumberOfBuildings', () => {
     it('should return the number of available buildings', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION)
+        of(MOCK_BUILDING_FEATURE_COLLECTION),
       );
       service.getBuildings().subscribe();
       tick();
       const numberOfBuildginsSignal = service.getnumberOfBuildings();
-      let resNumberOfBuildings: number = numberOfBuildginsSignal();
+      const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
       const expectedResult = 2;
 
       expect(
-        mockApiGeolocationService.get_buildings_pagined
+        mockApiGeolocationService.get_buildings_pagined,
       ).toHaveBeenCalled();
       expect(resNumberOfBuildings).toEqual(expectedResult);
     }));
@@ -132,17 +132,17 @@ describe('BuildingDataService', () => {
   describe('getNumberOfDsiplayedBuildings', () => {
     it('should return the number of displayed buildings', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION)
+        of(MOCK_BUILDING_FEATURE_COLLECTION),
       );
       service.getBuildings().subscribe();
       tick();
       const numberOfBuildginsSignal = service.getNumberOfDsiplayedBuildings();
-      let resNumberOfBuildings: number = numberOfBuildginsSignal();
+      const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
       const expectedResult = 2;
 
       expect(
-        mockApiGeolocationService.get_buildings_pagined
+        mockApiGeolocationService.get_buildings_pagined,
       ).toHaveBeenCalled();
       expect(resNumberOfBuildings).toEqual(expectedResult);
     }));
@@ -151,30 +151,30 @@ describe('BuildingDataService', () => {
   describe('hasNextPage', () => {
     it('should return true if the nextBuildingUrl is not null', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION)
+        of(MOCK_BUILDING_FEATURE_COLLECTION),
       );
       service.getBuildings().subscribe();
       tick();
       const hasNextPageSignal = service.hasNextPage();
-      let resHasNextPage: boolean = hasNextPageSignal();
+      const resHasNextPage: boolean = hasNextPageSignal();
 
       expect(
-        mockApiGeolocationService.get_buildings_pagined
+        mockApiGeolocationService.get_buildings_pagined,
       ).toHaveBeenCalled();
       expect(resHasNextPage).toBeTrue();
     }));
 
     it('should return false if the nextBuildingUrl is null', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null })
+        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
       );
       service.getBuildings().subscribe();
       tick();
       const hasNextPageSignal = service.hasNextPage();
-      let resHasNextPage: boolean = hasNextPageSignal();
+      const resHasNextPage: boolean = hasNextPageSignal();
 
       expect(
-        mockApiGeolocationService.get_buildings_pagined
+        mockApiGeolocationService.get_buildings_pagined,
       ).toHaveBeenCalled();
       expect(resHasNextPage).toBeFalse();
     }));
@@ -183,7 +183,7 @@ describe('BuildingDataService', () => {
   describe('loadNextBuildingsPage', () => {
     it('should call get_buildings_next_page and format the data to MAP.Building interface', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_next_page.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION)
+        of(MOCK_BUILDING_FEATURE_COLLECTION),
       );
       service.getBuildings().subscribe();
       tick();
@@ -213,7 +213,7 @@ describe('BuildingDataService', () => {
       ];
 
       expect(
-        mockApiGeolocationService.get_buildings_next_page
+        mockApiGeolocationService.get_buildings_next_page,
       ).toHaveBeenCalledWith('https://test.com/');
       expect(resBuildingArray).toEqual(expectedResult);
     }));

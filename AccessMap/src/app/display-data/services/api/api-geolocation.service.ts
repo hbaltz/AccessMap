@@ -26,28 +26,28 @@ export class ApiGeolocationService {
     if (environment.ACCES_LIBRE_API_KEY) {
       this.acceslibreHeaders = this.acceslibreHeaders.set(
         'Authorization',
-        `Api-Key ${environment.ACCES_LIBRE_API_KEY}`
+        `Api-Key ${environment.ACCES_LIBRE_API_KEY}`,
       );
     } else {
       console.error(
-        'The acceslibre api key is not defined in the environment file, please add it to have a working application'
+        'The acceslibre api key is not defined in the environment file, please add it to have a working application',
       );
     }
   }
 
   public get_buildings_pagined(
-    pageSize: number
+    pageSize: number,
   ): Observable<AccesLibreFeatureCollectionResponse> {
     return this.httpClient.get<AccesLibreFeatureCollectionResponse>(
       `https://acceslibre.beta.gouv.fr/api/erps/?page_size=${pageSize}&&?clean=true`,
       {
         headers: this.acceslibreHeaders,
-      }
+      },
     );
   }
 
   public get_buildings_next_page(
-    url: string
+    url: string,
   ): Observable<AccesLibreFeatureCollectionResponse> {
     return this.httpClient.get<AccesLibreFeatureCollectionResponse>(url, {
       headers: this.acceslibreHeaders,

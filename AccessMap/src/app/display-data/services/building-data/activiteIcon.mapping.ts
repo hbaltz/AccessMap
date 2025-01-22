@@ -1,4 +1,4 @@
-export const MappingActiviteIcon: { [activite: string]: string } = {
+export const MappingActiviteIcon: Record<string, string> = {
   default: 'question',
   hotel: 'bed',
   'grocery-or-supermarket': 'shopping-cart',
