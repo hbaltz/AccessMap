@@ -15,7 +15,7 @@ import { DATA } from '../../models/data.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
 import { MapService } from '../map/map.service';
 
-const NUMBER_BUILGINGS_PER_PAGE = 100;
+const NUMBER_BUILGINGS_PER_PAGE: number = 100;
 
 function getIconFromActiviteIcon(activiteIconName: string): string {
   if (activiteIconName && activiteIconName in MappingActiviteIcon) {
