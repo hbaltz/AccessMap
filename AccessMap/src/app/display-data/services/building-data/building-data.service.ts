@@ -11,7 +11,7 @@ import {
   ApiGeolocationService,
 } from '../api/api-geolocation.service';
 import { map, Observable, tap, throwError } from 'rxjs';
-import { DATA } from '../../models/map.model';
+import { DATA } from '../../models/data.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
 
 const NUMBER_BUILGINGS_PER_PAGE = 100;
