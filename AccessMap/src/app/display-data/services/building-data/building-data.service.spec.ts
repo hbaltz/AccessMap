@@ -273,7 +273,7 @@ describe('BuildingDataService', () => {
     service.getBuildings().subscribe();
     tick();
 
-    let errorMessage: string = '';
+    let errorMessage = '';
     service.loadNextBuildingsPage().subscribe({
       next: () => {
         fail('Expected an error, but got data instead');
