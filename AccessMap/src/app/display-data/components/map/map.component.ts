@@ -14,7 +14,8 @@ import { GeolocationService } from '../../services/geolocation/geolocation.servi
 import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster';
 import { DATA } from '../../models/data.model';
 import { BuildingSelectionService } from '../../services/building-selection/building-selection.service';
-import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
+import { debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
+import { MapService } from '../../services/map/map.service';
 
 const BG_COLOR_DEFAULT_CLASS = 'bg-white';
 const BG_COLOR_SELECTED_CLASS = 'bg-aquamarine';
@@ -35,6 +36,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private buildingSelectionService: BuildingSelectionService = inject(
     BuildingSelectionService,
   );
+  private mapService: MapService = inject(MapService);
 
   private map!: L.Map;
   private buildingClusterData!: L.MarkerClusterGroup;
@@ -48,9 +50,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor() {
     effect(() => {
-      const buildingId = this.selectedBuildingId();
-      if (buildingId) {
-        this.zoomToBuildingMarker(buildingId);
+      const selectedBuildingId = this.selectedBuildingId();
+      if (selectedBuildingId) {
+        this.zoomToSelectedBuildingMarker(selectedBuildingId);
       }
     });
   }
@@ -68,6 +70,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['initialBuildingArray']) {
+      // Clear the map before displaying the new buildings
+      this.buildingClusterData.clearLayers();
       this.displayBuildginsOnMap(this.initialBuildingArray);
     }
 
@@ -82,6 +86,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private initializeMap(): void {
     this.map = L.map('map').setView([47, 2], 6);
+    this.updateSelectedBounds();
 
     this.map.setMinZoom(MAP_MIN_ZOOM);
 
@@ -105,8 +110,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         if (this.isZoomOrMoveProgrammatic) {
           this.isZoomOrMoveProgrammatic = false;
         } else {
-          console.log('Map moved or zoomed');
-          console.log(this.map.getBounds());
+          this.updateSelectedBounds();
         }
       }),
     );
@@ -118,6 +122,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private displayBuildginsOnMap(buildingArray: DATA.Buidling[]): void {
     if (buildingArray.length !== 0) {
+      const selectBuildingId =
+        this.buildingSelectionService.getSelectedBuildingId()();
+
       buildingArray.forEach((building) => {
         const marker = L.marker(
           [building.gps_coord[1], building.gps_coord[0]],
@@ -145,6 +152,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
           );
         });
 
+        if (
+          selectBuildingId &&
+          building.id &&
+          building.id === selectBuildingId
+        ) {
+          this.updateMarkerClass(marker);
+        }
+
         this.buildingClusterData.addLayer(marker);
 
         this.mapBuildingIDMarkers.set(building.id, marker);
@@ -152,8 +167,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private zoomToBuildingMarker(buildingId: string): void {
-    const marker = this.mapBuildingIDMarkers.get(buildingId);
+  private zoomToSelectedBuildingMarker(selectedBuildingId: string): void {
+    const marker = this.mapBuildingIDMarkers.get(selectedBuildingId);
     if (marker) {
       const currentZoom = this.map.getZoom();
       const targetZoom = 15;
@@ -194,5 +209,15 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private surveyOnZoomendAndOnmoveend(): Observable<L.LeafletEvent> {
     return fromEvent(this.map, 'zoomend moveend').pipe(debounceTime(600));
+  }
+
+  private updateSelectedBounds(): void {
+    const bounds = this.map.getBounds();
+    this.mapService.setBoundsSelected({
+      minLat: bounds.getSouth(),
+      minLng: bounds.getWest(),
+      maxLat: bounds.getNorth(),
+      maxLng: bounds.getEast(),
+    });
   }
 }

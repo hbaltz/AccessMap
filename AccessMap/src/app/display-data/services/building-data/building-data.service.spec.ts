@@ -7,6 +7,9 @@ import {
 } from '../api/api-geolocation.service';
 import { of } from 'rxjs';
 import { DATA } from '../../models/data.model';
+import { MapService } from '../map/map.service';
+import { asyncData } from '../../../test-utils/async-data';
+import { MAP } from '../../models/map.model';
 
 const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   type: 'FeatureCollection',
@@ -39,8 +42,16 @@ const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   ],
 };
 
+const MOCK_MAP_BOUNDS: MAP.BoxLatLng = {
+  minLat: 0,
+  minLng: 1,
+  maxLat: 2,
+  maxLng: 3,
+};
+
 describe('BuildingDataService', () => {
   let service: BuildingDataService;
+
   const mockApiGeolocationService = jasmine.createSpyObj(
     'ApiGeolocationService',
     ['get_buildings_pagined', 'get_buildings_next_page'],
@@ -50,8 +61,15 @@ describe('BuildingDataService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: ApiGeolocationService, useValue: mockApiGeolocationService },
+        {
+          provide: MapService,
+          useValue: {
+            getBoundsSelected: () => asyncData<MAP.BoxLatLng>(MOCK_MAP_BOUNDS),
+          },
+        },
       ],
     });
+
     service = TestBed.inject(BuildingDataService);
   });
 
@@ -87,7 +105,7 @@ describe('BuildingDataService', () => {
 
       expect(
         mockApiGeolocationService.get_buildings_pagined,
-      ).toHaveBeenCalled();
+      ).toHaveBeenCalledWith(100, MOCK_MAP_BOUNDS);
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
@@ -125,7 +143,7 @@ describe('BuildingDataService', () => {
 
       expect(
         mockApiGeolocationService.get_buildings_pagined,
-      ).toHaveBeenCalled();
+      ).toHaveBeenCalledWith(100, MOCK_MAP_BOUNDS);
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
@@ -143,7 +161,7 @@ describe('BuildingDataService', () => {
 
       expect(
         mockApiGeolocationService.get_buildings_pagined,
-      ).toHaveBeenCalled();
+      ).toHaveBeenCalledWith(100, MOCK_MAP_BOUNDS);
       expect(resBuildingArray).toEqual(expectedResult);
     }));
   });
@@ -264,28 +282,28 @@ describe('BuildingDataService', () => {
       ).toHaveBeenCalledWith('https://test.com/');
       expect(resBuildingArray).toEqual(expectedResult);
     }));
+
+    it('should throw an error if the nextBuildingUrl is null', fakeAsync(() => {
+      mockApiGeolocationService.get_buildings_pagined.and.returnValue(
+        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
+      );
+      service.getBuildings().subscribe();
+      tick();
+
+      let errorMessage = '';
+      service.loadNextBuildingsPage().subscribe({
+        next: () => {
+          fail('Expected an error, but got data instead');
+        },
+        error: (err) => {
+          errorMessage = err.message;
+        },
+      });
+      tick();
+
+      const expectedResult = 'No more buildings to load';
+
+      expect(errorMessage).toEqual(expectedResult);
+    }));
   });
-
-  it('should throw an error if the nextBuildingUrl is null', fakeAsync(() => {
-    mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-      of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
-    );
-    service.getBuildings().subscribe();
-    tick();
-
-    let errorMessage = '';
-    service.loadNextBuildingsPage().subscribe({
-      next: () => {
-        fail('Expected an error, but got data instead');
-      },
-      error: (err) => {
-        errorMessage = err.message;
-      },
-    });
-    tick();
-
-    const expectedResult = 'No more buildings to load';
-
-    expect(errorMessage).toEqual(expectedResult);
-  }));
 });

@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { FeatureCollection, Point } from 'geojson';
+import { MAP } from '../../models/map.model';
 export interface AccesLibreFeatureCollectionResponse
   extends FeatureCollection<Point> {
   count: number;
@@ -37,9 +38,10 @@ export class ApiGeolocationService {
 
   public get_buildings_pagined(
     pageSize: number,
+    bounds: MAP.BoxLatLng,
   ): Observable<AccesLibreFeatureCollectionResponse> {
     return this.httpClient.get<AccesLibreFeatureCollectionResponse>(
-      `https://acceslibre.beta.gouv.fr/api/erps/?page_size=${pageSize}&&?clean=true`,
+      `https://acceslibre.beta.gouv.fr/api/erps/?page_size=${pageSize}&&?clean=true&&zone=${bounds.minLng},${bounds.minLat},${bounds.maxLng},${bounds.maxLat}`,
       {
         headers: this.acceslibreHeaders,
       },
