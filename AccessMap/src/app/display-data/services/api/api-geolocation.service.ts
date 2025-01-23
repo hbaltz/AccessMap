@@ -19,7 +19,7 @@ export class ApiGeolocationService {
 
   private acceslibreHeaders!: HttpHeaders;
 
-  constructor() {
+  public constructor() {
     this.acceslibreHeaders = new HttpHeaders({
       accept: 'application/geo+json',
     });

@@ -46,9 +46,9 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
 
   private subscriptionArray: Subscription[] = [];
 
-  constructor() {
+  public constructor() {
     effect(() => {
-      const selectedBuildingId = this.selectedBuildingId();
+      const selectedBuildingId: string | null = this.selectedBuildingId();
       if (selectedBuildingId) {
         this.scrollToBuildingItem(selectedBuildingId);
       }
@@ -76,7 +76,9 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
   }
 
   private scrollToBuildingItem(buildingId: string): void {
-    const element = document.getElementById(`building-${buildingId}`);
+    const element: HTMLElement | null = document.getElementById(
+      `building-${buildingId}`,
+    );
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -89,7 +91,7 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
     ).pipe(
       debounceTime(200),
       map((event: Event) => {
-        const element = event.target as Element;
+        const element: Element = event.target as Element;
         return element
           ? element.scrollHeight - element.scrollTop === element.clientHeight
           : false;

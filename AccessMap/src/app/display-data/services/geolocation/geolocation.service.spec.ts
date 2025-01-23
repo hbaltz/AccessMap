@@ -19,7 +19,7 @@ describe('GeolocationService', () => {
             longitude: 42.7138,
           };
 
-          //@ts-ignore
+          // @ts-ignore
           const position: GeolocationPosition = {
             coords: coords as GeolocationCoordinates,
             timestamp: Date.now(),
@@ -29,18 +29,19 @@ describe('GeolocationService', () => {
         },
       );
 
-      const position = await service.getCurrentLocation();
+      const position: GeolocationPosition = await service.getCurrentLocation();
       expect(navigator.geolocation.getCurrentPosition).toHaveBeenCalled();
       expect(position.coords.latitude).toEqual(40.7128);
       expect(position.coords.longitude).toEqual(42.7138);
     });
 
     it('should handle an error when location is not available', async () => {
-      const mockGeolocationPostiionError = {
+      const mockGeolocationPostiionError: GeolocationPositionError = {
         code: 1,
         message: 'User denied Geolocation',
         PERMISSION_DENIED: 1,
         POSITION_UNAVAILABLE: 2,
+        TIMEOUT: 3,
       };
 
       spyOn(navigator.geolocation, 'getCurrentPosition').and.callFake(

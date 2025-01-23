@@ -17,10 +17,10 @@ import { BuildingSelectionService } from '../../services/building-selection/buil
 import { debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
 import { MapService } from '../../services/map/map.service';
 
-const BG_COLOR_DEFAULT_CLASS = 'bg-white';
-const BG_COLOR_SELECTED_CLASS = 'bg-aquamarine';
+const BG_COLOR_DEFAULT_CLASS: string = 'bg-white';
+const BG_COLOR_SELECTED_CLASS: string = 'bg-aquamarine';
 
-const MAP_MIN_ZOOM = 6;
+const MAP_MIN_ZOOM: number = 6;
 
 @Component({
   selector: 'app-map',
@@ -48,9 +48,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private subscriptionArray: Subscription[] = [];
 
-  constructor() {
+  public constructor() {
     effect(() => {
-      const selectedBuildingId = this.selectedBuildingId();
+      const selectedBuildingId: string | null = this.selectedBuildingId();
       if (selectedBuildingId) {
         this.zoomToSelectedBuildingMarker(selectedBuildingId);
       }
@@ -124,11 +124,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private displayBuildginsOnMap(buildingArray: DATA.Buidling[]): void {
     if (buildingArray.length !== 0) {
-      const selectBuildingId =
+      const selectBuildingId: string | null =
         this.buildingSelectionService.getSelectedBuildingId()();
 
       buildingArray.forEach((building) => {
-        const marker = L.marker(
+        const marker: L.Marker = L.marker(
           [building.gps_coord[1], building.gps_coord[0]],
           {
             icon: L.divIcon({
@@ -136,7 +136,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
               iconSize: [30, 30],
               className: 'icon bg-white',
             }),
-            //@ts-expect-error: Custom property
+            // @ts-expect-error: Custom property
             buildingId: building.id,
           },
         );
@@ -170,10 +170,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private zoomToSelectedBuildingMarker(selectedBuildingId: string): void {
-    const marker = this.mapBuildingIDMarkers.get(selectedBuildingId);
+    const marker: L.Marker | undefined =
+      this.mapBuildingIDMarkers.get(selectedBuildingId);
     if (marker) {
-      const currentZoom = this.map.getZoom();
-      const targetZoom = 15;
+      const currentZoom: number = this.map.getZoom();
+      const targetZoom: number = 15;
 
       // We set to true to avoid the map moved or zoomed event to trigger an update of data in this case
       this.isZoomOrMoveProgrammatic = true;
@@ -188,7 +189,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       this.updateMarkerClass(marker);
 
       // If the marker is part of a cluster, spiderfy it
-      const parentMarker = this.buildingClusterData.getVisibleParent(marker);
+      const parentMarker: L.Marker =
+        this.buildingClusterData.getVisibleParent(marker);
       if (parentMarker instanceof L.MarkerCluster) {
         parentMarker.spiderfy();
       }
@@ -198,13 +200,13 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private updateMarkerClass(selectedBuildingMarker: L.Marker): void {
     // Reset all marker icons to the default class
     this.mapBuildingIDMarkers.forEach((buildingMarker) => {
-      const icon = buildingMarker.options.icon as L.Icon;
+      const icon: L.Icon = buildingMarker.options.icon as L.Icon;
       icon.options.className = `icon ${BG_COLOR_DEFAULT_CLASS}`;
       buildingMarker.setIcon(icon);
     });
 
     // Set a new icon with a custom background for the selected marker
-    const selectedIcon = selectedBuildingMarker.options.icon as L.Icon;
+    const selectedIcon: L.Icon = selectedBuildingMarker.options.icon as L.Icon;
     selectedIcon.options.className = `icon ${BG_COLOR_SELECTED_CLASS}`;
     selectedBuildingMarker.setIcon(selectedIcon);
   }
@@ -214,7 +216,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private updateSelectedBounds(): void {
-    const bounds = this.map.getBounds();
+    const bounds: L.LatLngBounds = this.map.getBounds();
     this.mapService.setBoundsSelected({
       minLat: bounds.getSouth(),
       minLng: bounds.getWest(),

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BuildingSelectionService } from './building-selection.service';
+import { Signal } from '@angular/core';
 
 describe('BuildingSelectionService', () => {
   let service: BuildingSelectionService;
@@ -12,14 +13,16 @@ describe('BuildingSelectionService', () => {
 
   describe('getSelectedBuildingId', () => {
     it('should return null if no building are selected', () => {
-      const selectedBuildingId = service.getSelectedBuildingId();
+      const selectedBuildingId: Signal<string | null> =
+        service.getSelectedBuildingId();
       expect(selectedBuildingId()).toBeNull();
     });
   });
 
   describe('setSelectedBuildingId', () => {
     it('should set the selected building id', () => {
-      const selectedBuildingId = service.getSelectedBuildingId();
+      const selectedBuildingId: Signal<string | null> =
+        service.getSelectedBuildingId();
 
       service.setSelectedBuildingId('1');
 
@@ -29,7 +32,8 @@ describe('BuildingSelectionService', () => {
 
   describe('clearSelectedBuildingId', () => {
     it('should clear the selected building id', () => {
-      const selectedBuildingId = service.getSelectedBuildingId();
+      const selectedBuildingId: Signal<string | null> =
+        service.getSelectedBuildingId();
 
       service.setSelectedBuildingId('1');
       service.clearSelectedBuildingId();

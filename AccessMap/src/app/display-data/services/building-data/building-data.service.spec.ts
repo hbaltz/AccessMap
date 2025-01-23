@@ -10,6 +10,7 @@ import { DATA } from '../../models/data.model';
 import { MapService } from '../map/map.service';
 import { asyncData } from '../../../test-utils/async-data';
 import { MAP } from '../../models/map.model';
+import { Signal } from '@angular/core';
 
 const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   type: 'FeatureCollection',
@@ -52,10 +53,11 @@ const MOCK_MAP_BOUNDS: MAP.BoxLatLng = {
 describe('BuildingDataService', () => {
   let service: BuildingDataService;
 
-  const mockApiGeolocationService = jasmine.createSpyObj(
-    'ApiGeolocationService',
-    ['get_buildings_pagined', 'get_buildings_next_page'],
-  );
+  const mockApiGeolocationService: jasmine.SpyObj<ApiGeolocationService> =
+    jasmine.createSpyObj<ApiGeolocationService>('ApiGeolocationService', [
+      'get_buildings_pagined',
+      'get_buildings_next_page',
+    ]);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -173,10 +175,11 @@ describe('BuildingDataService', () => {
       );
       service.getBuildings().subscribe();
       tick();
-      const numberOfBuildginsSignal = service.getnumberOfBuildings();
+      const numberOfBuildginsSignal: Signal<number> =
+        service.getnumberOfBuildings();
       const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
-      const expectedResult = 2;
+      const expectedResult: number = 2;
 
       expect(
         mockApiGeolocationService.get_buildings_pagined,
@@ -192,10 +195,11 @@ describe('BuildingDataService', () => {
       );
       service.getBuildings().subscribe();
       tick();
-      const numberOfBuildginsSignal = service.getNumberOfDsiplayedBuildings();
+      const numberOfBuildginsSignal: Signal<number> =
+        service.getNumberOfDsiplayedBuildings();
       const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
-      const expectedResult = 2;
+      const expectedResult: number = 2;
 
       expect(
         mockApiGeolocationService.get_buildings_pagined,
@@ -211,7 +215,7 @@ describe('BuildingDataService', () => {
       );
       service.getBuildings().subscribe();
       tick();
-      const hasNextPageSignal = service.hasNextPage();
+      const hasNextPageSignal: Signal<boolean> = service.hasNextPage();
       const resHasNextPage: boolean = hasNextPageSignal();
 
       expect(
@@ -226,7 +230,7 @@ describe('BuildingDataService', () => {
       );
       service.getBuildings().subscribe();
       tick();
-      const hasNextPageSignal = service.hasNextPage();
+      const hasNextPageSignal: Signal<boolean> = service.hasNextPage();
       const resHasNextPage: boolean = hasNextPageSignal();
 
       expect(
@@ -290,7 +294,7 @@ describe('BuildingDataService', () => {
       service.getBuildings().subscribe();
       tick();
 
-      let errorMessage = '';
+      let errorMessage: string = '';
       service.loadNextBuildingsPage().subscribe({
         next: () => {
           fail('Expected an error, but got data instead');
@@ -301,7 +305,7 @@ describe('BuildingDataService', () => {
       });
       tick();
 
-      const expectedResult = 'No more buildings to load';
+      const expectedResult: string = 'No more buildings to load';
 
       expect(errorMessage).toEqual(expectedResult);
     }));

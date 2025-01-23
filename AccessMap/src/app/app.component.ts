@@ -8,5 +8,5 @@ import { DisplayDataComponent } from './display-data/display-data.component';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'AccessMap';
+  public title = 'AccessMap';
 }
