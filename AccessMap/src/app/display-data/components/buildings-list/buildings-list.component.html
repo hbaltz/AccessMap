@@ -1,4 +1,4 @@
-<div id="list-buildings-container" class="overflow-y-auto">
+<div id="list-buildings-container" class="overflow-y-auto w-100">
   @for (building of buildingArray(); track building) {
     <app-building-card
       [id]="'building-' + building.id"
