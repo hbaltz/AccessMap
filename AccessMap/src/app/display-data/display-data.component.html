@@ -6,7 +6,7 @@
     [buildingArray]="buildingArray"
     class="d-flex column-one-row-two w-100"
     (loadMoreData)="launchNextPageLoading()"
-    [(isLoading)]="isLoading"
+    [(isLoading)]="isListLoading"
   ></app-buildings-list>
   <app-map
     [initialBuildingArray]="buildingArray"
@@ -14,3 +14,16 @@
     class="column-two"
   ></app-map>
 </div>
+
+@if (isBuildingDataLoading()) {
+  <div
+    class="p-absolute t-0 r-0 z-1000 bg-white border-rounded-bottom-left opacity-08 w-5"
+  >
+    <div class="loader">
+      <app-spinner-leaky></app-spinner-leaky>
+    </div>
+    <p class="m-0 font-size-07 grey d-flex justify-content-center">
+      Chargement...
+    </p>
+  </div>
+}

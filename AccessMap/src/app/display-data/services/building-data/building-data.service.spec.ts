@@ -11,6 +11,7 @@ import { MapService } from '../map/map.service';
 import { asyncData } from '../../../test-utils/async-data';
 import { MAP } from '../../models/map.model';
 import { Signal } from '@angular/core';
+import { BuildingLoadingService } from '../building-loading/building-loading.service';
 
 const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   type: 'FeatureCollection',
@@ -59,10 +60,20 @@ describe('BuildingDataService', () => {
       'get_buildings_next_page',
     ]);
 
+  const mockBuildingLoadingService: jasmine.SpyObj<BuildingLoadingService> =
+    jasmine.createSpyObj<BuildingLoadingService>('BuildingLoadingService', [
+      'hasStartLoadingBuildingData',
+      'hasStopLoadingBuildingData',
+    ]);
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         { provide: ApiGeolocationService, useValue: mockApiGeolocationService },
+        {
+          provide: BuildingLoadingService,
+          useValue: mockBuildingLoadingService,
+        },
         {
           provide: MapService,
           useValue: {
@@ -108,6 +119,12 @@ describe('BuildingDataService', () => {
       expect(
         mockApiGeolocationService.get_buildings_pagined,
       ).toHaveBeenCalledWith(100, MOCK_MAP_BOUNDS);
+      expect(
+        mockBuildingLoadingService.hasStartLoadingBuildingData,
+      ).toHaveBeenCalled();
+      expect(
+        mockBuildingLoadingService.hasStopLoadingBuildingData,
+      ).toHaveBeenCalled();
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 

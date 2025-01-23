@@ -14,6 +14,7 @@ import { map, Observable, switchMap, tap, throwError } from 'rxjs';
 import { DATA } from '../../models/data.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
 import { MapService } from '../map/map.service';
+import { BuildingLoadingService } from '../building-loading/building-loading.service';
 
 const NUMBER_BUILGINGS_PER_PAGE: number = 100;
 
@@ -66,6 +67,9 @@ export class BuildingDataService {
     ApiGeolocationService,
   );
   private mapService: MapService = inject(MapService);
+  private buidlingLoadingService: BuildingLoadingService = inject(
+    BuildingLoadingService,
+  );
 
   private numberOfBuildings: WritableSignal<number> = signal<number>(0);
   private numberOfDisplayedBuildings: WritableSignal<number> =
@@ -84,6 +88,7 @@ export class BuildingDataService {
 
   public getBuildings(): Observable<DATA.Buidling[]> {
     return this.mapService.getBoundsSelected().pipe(
+      tap(() => this.buidlingLoadingService.hasStartLoadingBuildingData()),
       switchMap((bounds) =>
         this.apiGeolocationService.get_buildings_pagined(
           NUMBER_BUILGINGS_PER_PAGE,
@@ -95,7 +100,10 @@ export class BuildingDataService {
         this.nextBuildingUrl.set(buildingFeatureCollection.next);
       }),
       map(transormFeaturesCollectionToBuildings),
-      tap((buildings) => this.numberOfDisplayedBuildings.set(buildings.length)),
+      tap((buildings) => {
+        this.numberOfDisplayedBuildings.set(buildings.length);
+        this.buidlingLoadingService.hasStopLoadingBuildingData();
+      }),
     );
   }
 
