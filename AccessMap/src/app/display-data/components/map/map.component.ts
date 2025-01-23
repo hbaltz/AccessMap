@@ -71,7 +71,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['initialBuildingArray']) {
       // Clear the map before displaying the new buildings
-      this.buildingClusterData.clearLayers();
+      if (this.buildingClusterData) {
+        this.buildingClusterData.clearLayers();
+      }
       this.displayBuildginsOnMap(this.initialBuildingArray);
     }
 
