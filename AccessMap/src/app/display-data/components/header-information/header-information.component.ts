@@ -1,6 +1,6 @@
 import { Component, inject, Signal } from '@angular/core';
 import { BuildingDataService } from '../../services/building-data/building-data.service';
-import { TooltipDirective } from '../../../directives/tooltip.directive';
+import { TooltipDirective } from '../../../common/directives/tooltip.directive';
 
 @Component({
   selector: 'app-header-information',

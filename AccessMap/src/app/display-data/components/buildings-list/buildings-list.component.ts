@@ -15,7 +15,7 @@ import { BuildingCardComponent } from '../building-card/building-card.component'
 import { DATA } from '../../models/map.model';
 import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
 import { BuildingDataService } from '../../services/building-data/building-data.service';
-import { SpinnerComponent } from '../../../common/spinner/spinner.component';
+import { SpinnerComponent } from '../../../common/components/spinner/spinner.component';
 import { BuildingSelectionService } from '../../services/building-selection/building-selection.service';
 
 @Component({
@@ -71,7 +71,18 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
     this.subscriptionArray.forEach((s) => s.unsubscribe());
   }
 
-  public surveyOnScroll(): Observable<boolean> {
+  public selectBuilding(buildingId: string): void {
+    this.buildingSelectionService.setSelectedBuildingId(buildingId);
+  }
+
+  private scrollToBuildingItem(buildingId: string): void {
+    const element = document.getElementById(`building-${buildingId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  private surveyOnScroll(): Observable<boolean> {
     return fromEvent(
       document.querySelector('#list-buildings-container')!,
       'scroll',
@@ -84,16 +95,5 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
           : false;
       }),
     );
-  }
-
-  public selectBuilding(buildingId: string): void {
-    this.buildingSelectionService.setSelectedBuildingId(buildingId);
-  }
-
-  private scrollToBuildingItem(buildingId: string): void {
-    const element = document.getElementById(`building-${buildingId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
   }
 }
