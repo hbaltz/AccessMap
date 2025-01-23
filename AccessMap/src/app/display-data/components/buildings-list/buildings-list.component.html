@@ -1,5 +1,5 @@
 <div id="list-buildings-container" class="overflow-y-auto w-100">
-  @for (building of buildingArray(); track building) {
+  @for (building of buildingArray(); track building.id) {
     <app-building-card
       [id]="'building-' + building.id"
       class="cursor-pointer"
