@@ -12,7 +12,7 @@ import {
   Signal,
 } from '@angular/core';
 import { BuildingCardComponent } from '../building-card/building-card.component';
-import { DATA } from '../../models/map.model';
+import { DATA } from '../../models/data.model';
 import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
 import { BuildingDataService } from '../../services/building-data/building-data.service';
 import { SpinnerComponent } from '../../../common/components/spinner/spinner.component';

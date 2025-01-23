@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MapComponent } from './components/map/map.component';
 import { BuildingsListComponent } from './components/buildings-list/buildings-list.component';
 import { Subscription } from 'rxjs';
-import { DATA } from './models/map.model';
+import { DATA } from './models/data.model';
 import { BuildingDataService } from './services/building-data/building-data.service';
 import { HeaderInformationComponent } from './components/header-information/header-information.component';
 

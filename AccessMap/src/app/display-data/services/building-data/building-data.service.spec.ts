@@ -6,7 +6,7 @@ import {
   ApiGeolocationService,
 } from '../api/api-geolocation.service';
 import { of } from 'rxjs';
-import { DATA } from '../../models/map.model';
+import { DATA } from '../../models/data.model';
 
 const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
   type: 'FeatureCollection',

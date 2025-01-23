@@ -4,6 +4,7 @@ import {
   inject,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Signal,
   SimpleChanges,
@@ -11,11 +12,14 @@ import {
 import * as L from 'leaflet';
 import { GeolocationService } from '../../services/geolocation/geolocation.service';
 import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster';
-import { DATA } from '../../models/map.model';
+import { DATA } from '../../models/data.model';
 import { BuildingSelectionService } from '../../services/building-selection/building-selection.service';
+import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
 
 const BG_COLOR_DEFAULT_CLASS = 'bg-white';
 const BG_COLOR_SELECTED_CLASS = 'bg-aquamarine';
+
+const MAP_MIN_ZOOM = 6;
 
 @Component({
   selector: 'app-map',
@@ -23,7 +27,7 @@ const BG_COLOR_SELECTED_CLASS = 'bg-aquamarine';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnInit, OnChanges {
+export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public initialBuildingArray: DATA.Buidling[] = [];
   @Input() public newBuildingArray: DATA.Buidling[] = [];
 
@@ -37,6 +41,10 @@ export class MapComponent implements OnInit, OnChanges {
   private mapBuildingIDMarkers = new Map<string, L.Marker>(); // Map of buildingID -> Marker
   private selectedBuildingId: Signal<string | null> =
     this.buildingSelectionService.getSelectedBuildingId();
+  // We want to keep track of whether the zoom or move was programmatic or not, so we can only send bounds updates when the user moves the map
+  private isZoomOrMoveProgrammatic = false;
+
+  private subscriptionArray: Subscription[] = [];
 
   constructor() {
     effect(() => {
@@ -68,8 +76,14 @@ export class MapComponent implements OnInit, OnChanges {
     }
   }
 
+  public ngOnDestroy(): void {
+    this.subscriptionArray.forEach((s) => s.unsubscribe());
+  }
+
   private initializeMap(): void {
     this.map = L.map('map').setView([47, 2], 6);
+
+    this.map.setMinZoom(MAP_MIN_ZOOM);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution:
@@ -80,6 +94,22 @@ export class MapComponent implements OnInit, OnChanges {
       removeOutsideVisibleBounds: true,
     });
     this.buildingClusterData.addTo(this.map);
+
+    this.buildingClusterData.on('clusterclick', () => {
+      // We set to true to avoid the map moved or zoomed event to trigger an update of data in this case
+      this.isZoomOrMoveProgrammatic = true;
+    });
+
+    this.subscriptionArray.push(
+      this.surveyOnZoomendAndOnmoveend().subscribe(() => {
+        if (this.isZoomOrMoveProgrammatic) {
+          this.isZoomOrMoveProgrammatic = false;
+        } else {
+          console.log('Map moved or zoomed');
+          console.log(this.map.getBounds());
+        }
+      }),
+    );
   }
 
   private zoomToLocation(position: GeolocationPosition): void {
@@ -128,6 +158,9 @@ export class MapComponent implements OnInit, OnChanges {
       const currentZoom = this.map.getZoom();
       const targetZoom = 15;
 
+      // We set to true to avoid the map moved or zoomed event to trigger an update of data in this case
+      this.isZoomOrMoveProgrammatic = true;
+
       // Only zoom if the current zoom level is less than the target zoom
       if (currentZoom < targetZoom) {
         this.map.setView(marker.getLatLng(), targetZoom); // Zoom to the marker
@@ -157,5 +190,9 @@ export class MapComponent implements OnInit, OnChanges {
     const selectedIcon = selectedBuildingMarker.options.icon as L.Icon;
     selectedIcon.options.className = `icon ${BG_COLOR_SELECTED_CLASS}`;
     selectedBuildingMarker.setIcon(selectedIcon);
+  }
+
+  private surveyOnZoomendAndOnmoveend(): Observable<L.LeafletEvent> {
+    return fromEvent(this.map, 'zoomend moveend').pipe(debounceTime(600));
   }
 }
