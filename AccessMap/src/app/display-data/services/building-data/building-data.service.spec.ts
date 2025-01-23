@@ -149,9 +149,9 @@ describe('BuildingDataService', () => {
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
-    it('should call return an empty array if the features is null in the api response', fakeAsync(() => {
+    it('should call return an empty array if the features is an empty array in the api response', fakeAsync(() => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: null }),
+        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: [] }),
       );
       let resBuildingArray: DATA.Buidling[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
