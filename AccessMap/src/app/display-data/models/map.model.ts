@@ -1,6 +1,6 @@
 import { Position } from 'geojson';
 
-export namespace DATA {
+export namespace MAP {
   export interface Buidling {
     id: string;
     name: string;
@@ -8,5 +8,12 @@ export namespace DATA {
     activite: string;
     adress: string;
     gps_coord: Position;
+  }
+
+  export interface BoxLatLng {
+    minLng: number;
+    minLat: number;
+    maxLng: number;
+    maxLat: number;
   }
 }

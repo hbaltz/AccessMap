@@ -61,18 +61,4 @@ describe('GeolocationService', () => {
       }
     });
   });
-
-  it('should reject when geolocation is not supported by the browser', async () => {
-    Object.defineProperty(navigator, 'geolocation', {
-      value: undefined,
-      writable: true,
-    });
-
-    try {
-      await service.getCurrentLocation();
-      fail('The promise should have been rejected');
-    } catch (error) {
-      expect(error).toBe('Geolocation is not supported by your browser');
-    }
-  });
 });

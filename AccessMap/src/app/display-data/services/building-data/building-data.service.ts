@@ -10,9 +10,10 @@ import {
   AccesLibreFeatureCollectionResponse,
   ApiGeolocationService,
 } from '../api/api-geolocation.service';
-import { map, Observable, tap, throwError } from 'rxjs';
+import { map, Observable, switchMap, tap, throwError } from 'rxjs';
 import { DATA } from '../../models/data.model';
 import { MappingActiviteIcon } from './activiteIcon.mapping';
+import { MapService } from '../map/map.service';
 
 const NUMBER_BUILGINGS_PER_PAGE = 100;
 
@@ -64,6 +65,7 @@ export class BuildingDataService {
   private apiGeolocationService: ApiGeolocationService = inject(
     ApiGeolocationService,
   );
+  private mapService: MapService = inject(MapService);
 
   private numberOfBuildings: WritableSignal<number> = signal<number>(0);
   private numberOfDisplayedBuildings: WritableSignal<number> =
@@ -81,18 +83,20 @@ export class BuildingDataService {
   }
 
   public getBuildings(): Observable<DATA.Buidling[]> {
-    return this.apiGeolocationService
-      .get_buildings_pagined(NUMBER_BUILGINGS_PER_PAGE)
-      .pipe(
-        tap((buildingFeatureCollection) => {
-          this.numberOfBuildings.set(buildingFeatureCollection.count);
-          this.nextBuildingUrl.set(buildingFeatureCollection.next);
-        }),
-        map(transormFeaturesCollectionToBuildings),
-        tap((buildings) =>
-          this.numberOfDisplayedBuildings.set(buildings.length),
+    return this.mapService.getBoundsSelected().pipe(
+      switchMap((bounds) =>
+        this.apiGeolocationService.get_buildings_pagined(
+          NUMBER_BUILGINGS_PER_PAGE,
+          bounds,
         ),
-      );
+      ),
+      tap((buildingFeatureCollection) => {
+        this.numberOfBuildings.set(buildingFeatureCollection.count);
+        this.nextBuildingUrl.set(buildingFeatureCollection.next);
+      }),
+      map(transormFeaturesCollectionToBuildings),
+      tap((buildings) => this.numberOfDisplayedBuildings.set(buildings.length)),
+    );
   }
 
   public hasNextPage(): Signal<boolean> {
