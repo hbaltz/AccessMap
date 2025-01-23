@@ -15,12 +15,12 @@ import { BuildingCardComponent } from '../building-card/building-card.component'
 import { DATA } from '../../models/data.model';
 import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
 import { BuildingDataService } from '../../services/building-data/building-data.service';
-import { SpinnerComponent } from '../../../common/components/spinner/spinner.component';
+import { SpinnerFieryComponent } from '../../../common/components/spinners/spinner-fiery/spinner-fiery.component';
 import { BuildingSelectionService } from '../../services/building-selection/building-selection.service';
 
 @Component({
   selector: 'app-buildings-list',
-  imports: [BuildingCardComponent, SpinnerComponent],
+  imports: [BuildingCardComponent, SpinnerFieryComponent],
   templateUrl: './buildings-list.component.html',
   styleUrl: './buildings-list.component.css',
 })

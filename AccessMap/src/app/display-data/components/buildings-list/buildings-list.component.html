@@ -9,7 +9,9 @@
     ></app-building-card>
   }
   @if (isLoading) {
-    <app-spinner class="mt-1"></app-spinner>
+    <div class="mt-1 d-flex justify-content-center building-list-loader">
+      <app-spinner-fiery></app-spinner-fiery>
+    </div>
   }
   @if (!areMoreBuildingAvailable()) {
     <div class="d-flex justify-content-center p-0">
