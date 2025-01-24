@@ -1,8 +1,10 @@
 import {
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
+  Output,
   SimpleChanges,
 } from '@angular/core';
 import { DATA } from '../../models/data.model';
@@ -17,6 +19,9 @@ import { SpinnerFieryComponent } from '../../../common/components/spinners/spinn
 })
 export class BuildingDetailsComponent implements OnChanges {
   @Input({ required: true }) public building: DATA.Building | null = null;
+  @Input() isVisible: boolean = false;
+  @Output() isVisibleChange = new EventEmitter<boolean>();
+
   public buildingDetailSectionArray: DATA.BuildingDetailsSection[] | null =
     null;
 
@@ -35,5 +40,9 @@ export class BuildingDetailsComponent implements OnChanges {
           this.isLoading = false;
         });
     }
+  }
+
+  public closeWindow(): void {
+    this.isVisibleChange.emit(false);
   }
 }
