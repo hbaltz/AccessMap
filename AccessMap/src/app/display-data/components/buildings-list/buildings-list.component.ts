@@ -36,8 +36,8 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
     BuildingSelectionService,
   );
 
-  public buildingArray: InputSignal<DATA.Buidling[]> =
-    input.required<DATA.Buidling[]>();
+  public buildingArray: InputSignal<DATA.Building[]> =
+    input.required<DATA.Building[]>();
 
   public areMoreBuildingAvailable: Signal<boolean> =
     this.buildingDataService.hasNextPage();
@@ -71,8 +71,8 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
     this.subscriptionArray.forEach((s) => s.unsubscribe());
   }
 
-  public selectBuilding(buildingId: string): void {
-    this.buildingSelectionService.setSelectedBuildingId(buildingId);
+  public selectBuilding(building: DATA.Building): void {
+    this.buildingSelectionService.setSelectedBuilding(building);
   }
 
   private scrollToBuildingItem(buildingId: string): void {

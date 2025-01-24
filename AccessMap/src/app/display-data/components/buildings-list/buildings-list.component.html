@@ -5,7 +5,7 @@
       class="cursor-pointer"
       [building]="building"
       [selected]="building.id === selectedBuildingId()"
-      (click)="selectBuilding(building.id)"
+      (click)="selectBuilding(building)"
     ></app-building-card>
   }
   @if (isLoading) {

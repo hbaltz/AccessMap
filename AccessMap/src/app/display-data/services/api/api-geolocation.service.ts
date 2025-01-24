@@ -2,14 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { FeatureCollection, Point } from 'geojson';
 import { MAP } from '../../models/map.model';
-export interface AccesLibreFeatureCollectionResponse
-  extends FeatureCollection<Point> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-}
+import { API_ACCESS_LIBRE } from '../../models/api-access-libre.model';
 
 @Injectable({
   providedIn: 'root',
@@ -39,19 +33,33 @@ export class ApiGeolocationService {
   public get_buildings_pagined(
     pageSize: number,
     bounds: MAP.BoxLatLng,
-  ): Observable<AccesLibreFeatureCollectionResponse> {
-    return this.httpClient.get<AccesLibreFeatureCollectionResponse>(
+  ): Observable<API_ACCESS_LIBRE.FeatureCollectionResponse> {
+    return this.get<API_ACCESS_LIBRE.FeatureCollectionResponse>(
       `https://acceslibre.beta.gouv.fr/api/erps/?page_size=${pageSize}&&?clean=true&&zone=${bounds.minLng},${bounds.minLat},${bounds.maxLng},${bounds.maxLat}`,
-      {
-        headers: this.acceslibreHeaders,
-      },
     );
   }
 
   public get_buildings_next_page(
     url: string,
-  ): Observable<AccesLibreFeatureCollectionResponse> {
-    return this.httpClient.get<AccesLibreFeatureCollectionResponse>(url, {
+  ): Observable<API_ACCESS_LIBRE.FeatureCollectionResponse> {
+    return this.get<API_ACCESS_LIBRE.FeatureCollectionResponse>(url);
+  }
+
+  /**
+   * Get the detail information of a building
+   * @param buildingSlug the slug of the building, i don't know why accesslibre used slug insted of uuid
+   * @returns the equipment in the building
+   */
+  public get_building_info(
+    buildingSlug: string,
+  ): Observable<API_ACCESS_LIBRE.BuildingDetails> {
+    return this.get<API_ACCESS_LIBRE.BuildingDetails>(
+      `https://acceslibre.beta.gouv.fr/api/erps/${buildingSlug}/widget`,
+    );
+  }
+
+  private get<T>(url: string): Observable<T> {
+    return this.httpClient.get<T>(url, {
       headers: this.acceslibreHeaders,
     });
   }

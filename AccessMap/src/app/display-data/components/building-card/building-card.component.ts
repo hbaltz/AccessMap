@@ -9,6 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './building-card.component.css',
 })
 export class BuildingCardComponent {
-  public building: InputSignal<DATA.Buidling> = input.required<DATA.Buidling>();
+  public building: InputSignal<DATA.Building> = input.required<DATA.Building>();
   public selected: InputSignal<boolean> = input<boolean>(false);
 }

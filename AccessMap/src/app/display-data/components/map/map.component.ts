@@ -29,8 +29,8 @@ const MAP_MIN_ZOOM: number = 6;
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() public initialBuildingArray: DATA.Buidling[] = [];
-  @Input() public newBuildingArray: DATA.Buidling[] = [];
+  @Input() public initialBuildingArray: DATA.Building[] = [];
+  @Input() public newBuildingArray: DATA.Building[] = [];
 
   private geolocationService: GeolocationService = inject(GeolocationService);
   private buildingSelectionService: BuildingSelectionService = inject(
@@ -122,7 +122,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.map.panTo([position.coords.latitude, position.coords.longitude]);
   }
 
-  private displayBuildginsOnMap(buildingArray: DATA.Buidling[]): void {
+  private displayBuildginsOnMap(buildingArray: DATA.Building[]): void {
     if (buildingArray.length !== 0) {
       const selectBuildingId: string | null =
         this.buildingSelectionService.getSelectedBuildingId()();
@@ -137,7 +137,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
               className: 'icon bg-white',
             }),
             // @ts-expect-error: Custom property
-            buildingId: building.id,
+            building: building,
           },
         );
         marker.bindTooltip(
@@ -149,8 +149,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         );
 
         marker.on('click', (event) => {
-          this.buildingSelectionService.setSelectedBuildingId(
-            event.target.options.buildingId,
+          this.buildingSelectionService.setSelectedBuilding(
+            event.target.options.building,
           );
         });
 
