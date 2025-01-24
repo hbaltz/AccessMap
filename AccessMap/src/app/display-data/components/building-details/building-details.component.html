@@ -5,7 +5,7 @@
 <i class="fa-solid fa-xmark grey cursor-pointer" title="Fermer les information" (click)="closeWindow()"></i>
 
 <div class="d-flex justify-content-center">
-    <h3 class="mt-05 text-align-center">{{ building?.name }}</h3>
+    <h3 class="mt-05 text-align-center capitalize">{{ building?.name }}</h3>
 </div>
   @if (isLoading) {
     <div class="h-80 justify-content-center align-content-center">
@@ -17,7 +17,7 @@
     @if (buildingDetailSectionArray && buildingDetailSectionArray.length > 0) {
       <div class="pl-1 pr-1 overflow-y-auto h-85">
         @for (section of buildingDetailSectionArray; track $index) {
-          <h4>{{ section.title }}</h4>
+        <h4><i class="fa-solid fa-{{section.icon}} pr-1"></i>{{ section.title }}</h4>
           <ul>
             @for (label of section.labels; track label) {
               <li>{{ label }}</li>
