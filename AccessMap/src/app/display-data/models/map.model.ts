@@ -1,7 +1,7 @@
 import { Position } from 'geojson';
 
 export namespace MAP {
-  export interface Buidling {
+  export interface Building {
     id: string;
     name: string;
     icon: string;

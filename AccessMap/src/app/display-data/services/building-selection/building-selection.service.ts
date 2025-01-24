@@ -1,22 +1,34 @@
-import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  computed,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { DATA } from '../../models/data.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BuildingSelectionService {
-  private selectedBuildingId: WritableSignal<string | null> = signal<
-    string | null
-  >(null);
+  private selectedBuilding: WritableSignal<DATA.Building | null> =
+    signal<DATA.Building | null>(null);
 
   public getSelectedBuildingId(): Signal<string | null> {
-    return this.selectedBuildingId;
+    return computed(() => {
+      return this.selectedBuilding()?.id || null;
+    });
   }
 
-  public setSelectedBuildingId(buildingId: string): void {
-    this.selectedBuildingId.set(buildingId);
+  public getSelectedBuilding(): Signal<DATA.Building | null> {
+    return this.selectedBuilding;
   }
 
-  public clearSelectedBuildingId(): void {
-    this.selectedBuildingId.set(null);
+  public setSelectedBuilding(building: DATA.Building): void {
+    this.selectedBuilding.set(building);
+  }
+
+  public clearSelectedBuilding(): void {
+    this.selectedBuilding.set(null);
   }
 }

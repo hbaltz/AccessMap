@@ -1,10 +1,7 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { BuildingDataService } from './building-data.service';
-import {
-  AccesLibreFeatureCollectionResponse,
-  ApiGeolocationService,
-} from '../api/api-geolocation.service';
+import { ApiGeolocationService } from '../api/api-geolocation.service';
 import { of } from 'rxjs';
 import { DATA } from '../../models/data.model';
 import { MapService } from '../map/map.service';
@@ -12,37 +9,8 @@ import { asyncData } from '../../../test-utils/async-data';
 import { MAP } from '../../models/map.model';
 import { Signal } from '@angular/core';
 import { BuildingLoadingService } from '../building-loading/building-loading.service';
-
-const MOCK_BUILDING_FEATURE_COLLECTION: AccesLibreFeatureCollectionResponse = {
-  type: 'FeatureCollection',
-  count: 2,
-  next: 'https://test.com/',
-  previous: null,
-  features: [
-    {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [5.384739, 49.163546] },
-      properties: {
-        uuid: '1',
-        nom: 'Hotel',
-        adresse: '12 Rue Test 11111 TestCity',
-        activite: { nom: 'Hôtel', vector_icon: 'hotel' },
-        web_url: 'https://test.com/hotel',
-      },
-    },
-    {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [6.900571, 48.275392] },
-      properties: {
-        uuid: '2',
-        nom: 'Restaurant',
-        adresse: '189 Rue Mock 22222 MockCity',
-        activite: { nom: 'Restaurant', vector_icon: 'restaurant' },
-        web_url: 'https://test.com/restaurant',
-      },
-    },
-  ],
-};
+import { MOCK_BUILDING_FEATURE_COLLECTION } from '../../../test-utils/mock/feature-collection-building.mock';
+import { MOCK_BUILDING_DETAILS } from '../../../test-utils/mock/building-details.mock';
 
 const MOCK_MAP_BOUNDS: MAP.BoxLatLng = {
   minLat: 0,
@@ -58,6 +26,7 @@ describe('BuildingDataService', () => {
     jasmine.createSpyObj<ApiGeolocationService>('ApiGeolocationService', [
       'get_buildings_pagined',
       'get_buildings_next_page',
+      'get_building_info',
     ]);
 
   const mockBuildingLoadingService: jasmine.SpyObj<BuildingLoadingService> =
@@ -91,13 +60,13 @@ describe('BuildingDataService', () => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
         of(MOCK_BUILDING_FEATURE_COLLECTION),
       );
-      let resBuildingArray: DATA.Buidling[] = [];
+      let resBuildingArray: DATA.Building[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
         resBuildingArray = buildingsArray;
       });
       tick();
 
-      const expectedResult: DATA.Buidling[] = [
+      const expectedResult: DATA.Building[] = [
         {
           id: '1',
           name: 'Hotel',
@@ -105,6 +74,7 @@ describe('BuildingDataService', () => {
           icon: 'bed',
           activite: 'Hôtel',
           adress: '12 Rue Test 11111 TestCity',
+          slug: 'hotel',
         },
         {
           id: '2',
@@ -113,6 +83,7 @@ describe('BuildingDataService', () => {
           icon: 'utensils',
           activite: 'Restaurant',
           adress: '189 Rue Mock 22222 MockCity',
+          slug: 'restaurant',
         },
       ];
 
@@ -143,13 +114,13 @@ describe('BuildingDataService', () => {
           ],
         }),
       );
-      let resBuildingArray: DATA.Buidling[] = [];
+      let resBuildingArray: DATA.Building[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
         resBuildingArray = buildingsArray;
       });
       tick();
 
-      const expectedResult: DATA.Buidling[] = [
+      const expectedResult: DATA.Building[] = [
         {
           id: '1',
           name: 'Hotel',
@@ -157,6 +128,7 @@ describe('BuildingDataService', () => {
           icon: 'question',
           activite: 'Activité inconnue',
           adress: '12 Rue Test 11111 TestCity',
+          slug: 'hotel',
         },
       ];
 
@@ -170,13 +142,13 @@ describe('BuildingDataService', () => {
       mockApiGeolocationService.get_buildings_pagined.and.returnValue(
         of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: [] }),
       );
-      let resBuildingArray: DATA.Buidling[] = [];
+      let resBuildingArray: DATA.Building[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
         resBuildingArray = buildingsArray;
       });
       tick();
 
-      const expectedResult: DATA.Buidling[] = [];
+      const expectedResult: DATA.Building[] = [];
 
       expect(
         mockApiGeolocationService.get_buildings_pagined,
@@ -273,13 +245,13 @@ describe('BuildingDataService', () => {
       );
       service.getBuildings().subscribe();
       tick();
-      let resBuildingArray: DATA.Buidling[] = [];
+      let resBuildingArray: DATA.Building[] = [];
       service.loadNextBuildingsPage().subscribe((buildingsArray) => {
         resBuildingArray = buildingsArray;
       });
       tick();
 
-      const expectedResult: DATA.Buidling[] = [
+      const expectedResult: DATA.Building[] = [
         {
           id: '1',
           name: 'Hotel',
@@ -287,6 +259,7 @@ describe('BuildingDataService', () => {
           icon: 'bed',
           activite: 'Hôtel',
           adress: '12 Rue Test 11111 TestCity',
+          slug: 'hotel',
         },
         {
           id: '2',
@@ -295,6 +268,7 @@ describe('BuildingDataService', () => {
           icon: 'utensils',
           activite: 'Restaurant',
           adress: '189 Rue Mock 22222 MockCity',
+          slug: 'restaurant',
         },
       ];
 
@@ -325,6 +299,46 @@ describe('BuildingDataService', () => {
       const expectedResult: string = 'No more buildings to load';
 
       expect(errorMessage).toEqual(expectedResult);
+    }));
+  });
+
+  describe('getBuildingDetails', () => {
+    it('should recover the detail of the building corresponding to the slug', fakeAsync(() => {
+      mockApiGeolocationService.get_building_info.and.returnValue(
+        of(MOCK_BUILDING_DETAILS),
+      );
+      let result: DATA.BuildingDetailsSection[] = [];
+      service
+        .getBuildingDetails('the-test-ski-company-chalet-test')
+        .subscribe((buildingDetails) => {
+          result = buildingDetails;
+        });
+      tick();
+
+      const expectedResult: DATA.BuildingDetailsSection[] = [
+        {
+          title: 'Stationnement',
+          labels: ['Pas de stationnement adapté à proximité'],
+          icon: 'car',
+        },
+        {
+          title: 'Accès',
+          labels: ['Entrée de plain pied'],
+          icon: 'road',
+        },
+        {
+          title: 'Personnel',
+          labels: ['Personnel non formé'],
+          icon: 'user',
+        },
+        {
+          title: 'Inconnu',
+          labels: ['Test'],
+          icon: 'question',
+        },
+      ];
+
+      expect(result).toEqual(expectedResult);
     }));
   });
 });

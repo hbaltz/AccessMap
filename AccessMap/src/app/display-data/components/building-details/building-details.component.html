@@ -1,0 +1,31 @@
+<div
+  class="p-fixed b-25 h-50 w-20 r-0 bg-white z-1000 opacity-09 border-rounded-left-5 p-1"
+>
+  <h3>{{ building?.name }}</h3>
+  @if (isLoading) {
+    <div class="h-80 justify-content-center align-content-center">
+      <div class="h-30">
+        <app-spinner-fiery></app-spinner-fiery>
+      </div>
+    </div>
+  } @else {
+    @if (buildingDetailSectionArray && buildingDetailSectionArray.length > 0) {
+      <div class="pl-1 pr-1 overflow-y-auto h-85">
+        @for (section of buildingDetailSectionArray; track $index) {
+          <h4>{{ section.title }}</h4>
+          <ul>
+            @for (label of section.labels; track label) {
+              <li>{{ label }}</li>
+            }
+          </ul>
+        }
+      </div>
+    } @else {
+      <div class="ustify-content-center align-content-center h-80">
+        <p class="test-align-center">
+          Aucune information concernant ce bâtiment pour le moment.
+        </p>
+      </div>
+    }
+  }
+</div>

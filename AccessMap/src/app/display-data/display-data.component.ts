@@ -7,12 +7,15 @@ import { BuildingDataService } from './services/building-data/building-data.serv
 import { HeaderInformationComponent } from './components/header-information/header-information.component';
 import { SpinnerLeakyComponent } from '../common/components/spinners/spinner-leaky/spinner-leaky.component';
 import { BuildingLoadingService } from './services/building-loading/building-loading.service';
+import { BuildingDetailsComponent } from './components/building-details/building-details.component';
+import { BuildingSelectionService } from './services/building-selection/building-selection.service';
 
 @Component({
   selector: 'app-display-data',
   imports: [
     MapComponent,
     BuildingsListComponent,
+    BuildingDetailsComponent,
     HeaderInformationComponent,
     SpinnerLeakyComponent,
   ],
@@ -20,8 +23,8 @@ import { BuildingLoadingService } from './services/building-loading/building-loa
   styleUrl: './display-data.component.css',
 })
 export class DisplayDataComponent implements OnInit, OnDestroy {
-  public buildingArray: DATA.Buidling[] = [];
-  public addedBuildingForMap: DATA.Buidling[] = [];
+  public buildingArray: DATA.Building[] = [];
+  public addedBuildingForMap: DATA.Building[] = [];
 
   public isListLoading = false;
 
@@ -30,10 +33,15 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
   private buildingLoadingService: BuildingLoadingService = inject(
     BuildingLoadingService,
   );
+  private buildingSelectionService: BuildingSelectionService = inject(
+    BuildingSelectionService,
+  );
   private subscriptionArray: Subscription[] = [];
 
   public isBuildingDataLoading: Signal<boolean> =
     this.buildingLoadingService.getIsBuildingDataLoading();
+  public selectBuilding: Signal<DATA.Building | null> =
+    this.buildingSelectionService.getSelectedBuilding();
 
   public ngOnInit(): void {
     this.subscriptionArray.push(
