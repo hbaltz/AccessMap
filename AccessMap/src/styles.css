@@ -106,6 +106,12 @@ body {
 .m-1 {
   margin: 1rem;
 }
+.mt-0 {
+  margin-top: 0;
+}
+.mt-05 {
+  margin-top: 0.5rem;
+}
 .mt-1 {
   margin-top: 1rem;
 }
@@ -155,7 +161,7 @@ body {
 }
 
 /** Text-align **/
-.test-align-center {
+.text-align-center {
   text-align: center;
 }
 

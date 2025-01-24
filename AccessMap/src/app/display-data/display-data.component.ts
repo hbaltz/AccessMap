@@ -1,4 +1,11 @@
-import { Component, inject, OnDestroy, OnInit, Signal } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  OnDestroy,
+  OnInit,
+  Signal,
+} from '@angular/core';
 import { MapComponent } from './components/map/map.component';
 import { BuildingsListComponent } from './components/buildings-list/buildings-list.component';
 import { Subscription } from 'rxjs';
@@ -27,6 +34,7 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
   public addedBuildingForMap: DATA.Building[] = [];
 
   public isListLoading = false;
+  public isDetailsVisible = false;
 
   private buildingDataService: BuildingDataService =
     inject(BuildingDataService);
@@ -42,6 +50,15 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
     this.buildingLoadingService.getIsBuildingDataLoading();
   public selectBuilding: Signal<DATA.Building | null> =
     this.buildingSelectionService.getSelectedBuilding();
+
+  public constructor() {
+    effect(() => {
+      const selectedBuilding: DATA.Building | null = this.selectBuilding();
+      if (selectedBuilding) {
+        this.isDetailsVisible = true;
+      }
+    });
+  }
 
   public ngOnInit(): void {
     this.subscriptionArray.push(
