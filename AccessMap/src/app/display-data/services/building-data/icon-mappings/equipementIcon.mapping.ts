@@ -4,4 +4,6 @@ export const MappingEquipementIcon: Record<string, string> = {
   accès: 'road',
   personnel: 'user',
   sanitaire: 'toilet',
+  'chambres accessibles': 'bed',
+  'équipements sourd et malentendant': 'deaf',
 };
