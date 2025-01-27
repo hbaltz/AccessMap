@@ -1,5 +1,5 @@
 # AccessMap
-![Logo](/AccessMap/src/assets/logo.png)
+![Logo](/src/assets/logo.png)
 
 Une carte interactive pour voir l'accessibilité des lieux pour les personnes en situation de handicap
 
