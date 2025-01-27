@@ -12,7 +12,10 @@ import { DATA } from '../../models/data.model';
 })
 export class BuildingSelectionService {
   private selectedBuilding: WritableSignal<DATA.Building | null> =
-    signal<DATA.Building | null>(null);
+    signal<DATA.Building | null>(null, {
+      // We want to triger the signal even if the building is the same (to reopen the information card for example)
+      equal: () => false,
+    });
 
   public getSelectedBuildingId(): Signal<string | null> {
     return computed(() => {
