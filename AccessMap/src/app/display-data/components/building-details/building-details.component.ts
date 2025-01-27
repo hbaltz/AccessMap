@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  HostListener,
   inject,
   Input,
   OnChanges,
@@ -19,8 +20,8 @@ import { SpinnerFieryComponent } from '../../../common/components/spinners/spinn
 })
 export class BuildingDetailsComponent implements OnChanges {
   @Input({ required: true }) public building: DATA.Building | null = null;
-  @Input() isVisible: boolean = false;
-  @Output() isVisibleChange = new EventEmitter<boolean>();
+  @Input() public isVisible: boolean = false;
+  @Output() public isVisibleChange = new EventEmitter<boolean>();
 
   public buildingDetailSectionArray: DATA.BuildingDetailsSection[] | null =
     null;
@@ -39,6 +40,14 @@ export class BuildingDetailsComponent implements OnChanges {
           this.buildingDetailSectionArray = buildingDetails;
           this.isLoading = false;
         });
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  public onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closeWindow();
     }
   }
 
