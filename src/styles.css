@@ -95,6 +95,9 @@ body {
 .pl-1 {
   padding-left: 1rem;
 }
+.pr-05 {
+  padding-right: 0.5rem;
+}
 .pr-1 {
   padding-right: 1rem;
 }
@@ -249,4 +252,20 @@ body {
 /** Font-size **/
 .font-size-07 {
   font-size: 0.7rem;
+}
+
+/** Input **/
+
+/* Hide arrow of the input number with thhe corresponding class */
+/* Chrome, Safari, Edge, Opera */
+input.input-number-no-arrow::-webkit-outer-spin-button,
+input.input-number-no-arrow::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input.input-number-no-arrow[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

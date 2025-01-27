@@ -30,12 +30,21 @@ export class ApiGeolocationService {
     }
   }
 
-  public get_buildings_pagined(
+  public get_buildings_pagined_by_bounds(
     pageSize: number,
     bounds: MAP.BoxLatLng,
   ): Observable<API_ACCESS_LIBRE.FeatureCollectionResponse> {
     return this.get<API_ACCESS_LIBRE.FeatureCollectionResponse>(
-      `https://acceslibre.beta.gouv.fr/api/erps/?page_size=${pageSize}&&?clean=true&&zone=${bounds.minLng},${bounds.minLat},${bounds.maxLng},${bounds.maxLat}`,
+      `https://acceslibre.beta.gouv.fr/api/erps/?page_size=${pageSize}&clean=true&zone=${bounds.minLng},${bounds.minLat},${bounds.maxLng},${bounds.maxLat}`,
+    );
+  }
+
+  public get_buildings_pagined_by_postal_code(
+    pageSize: number,
+    postalCode: number,
+  ): Observable<API_ACCESS_LIBRE.FeatureCollectionResponse> {
+    return this.get<API_ACCESS_LIBRE.FeatureCollectionResponse>(
+      `https://acceslibre.beta.gouv.fr/api/erps/?page_size=${pageSize}&clean=true&code_postal=${postalCode}`,
     );
   }
 

@@ -18,6 +18,21 @@ describe('MapService', () => {
         Subject<MAP.BoxLatLng>,
       );
     });
+
+    it('should return the default value', fakeAsync(() => {
+      let result: MAP.BoxLatLng = null!;
+
+      service.getBoundsSelected().subscribe((bounds) => (result = bounds));
+      tick();
+
+      const expectedResult: MAP.BoxLatLng = {
+        minLat: 39,
+        minLng: -13,
+        maxLat: 53,
+        maxLng: 17,
+      };
+      expect(result).toEqual(expectedResult);
+    }));
   });
 
   describe('setBoundsSelected', () => {

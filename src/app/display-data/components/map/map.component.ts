@@ -88,7 +88,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private initializeMap(): void {
     this.map = L.map('map').setView([47, 2], 6);
-    this.updateSelectedBounds();
 
     this.map.setMinZoom(MAP_MIN_ZOOM);
 

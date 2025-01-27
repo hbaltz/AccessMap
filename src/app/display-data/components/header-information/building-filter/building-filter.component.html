@@ -1,0 +1,16 @@
+<form [formGroup]="postalCodeForm" (ngSubmit)="onSubmit()">
+  <input
+    id="postalCode"
+    type="number"
+    formControlName="postalCode"
+    placeholder="Code postal"
+    class="mr-1 input-number-no-arrow"
+  />
+  <button type="submit" [disabled]="postalCodeForm.invalid">
+    <i class="fa-solid fa-magnifying-glass pr-05"></i>Rechercher
+  </button>
+</form>
+
+<button (click)="reinitFilters()">
+  <i class="fa-solid fa-xmark pr-05"></i>Réinitialiser les filtres
+</button>
