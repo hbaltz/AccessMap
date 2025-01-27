@@ -1,22 +1,30 @@
 <div id="list-buildings-container" class="overflow-y-auto w-100">
-  @for (building of buildingArray(); track building.id) {
-    <app-building-card
-      [id]="'building-' + building.id"
-      class="cursor-pointer"
-      [building]="building"
-      [selected]="building.id === selectedBuildingId()"
-      (click)="selectBuilding(building)"
-    ></app-building-card>
-  }
-  @if (isLoading) {
-    <div class="mt-1 d-flex justify-content-center building-list-loader">
-      <app-spinner-fiery></app-spinner-fiery>
-    </div>
-  }
-  @if (!areMoreBuildingAvailable()) {
+  @if (buildingArray() && buildingArray().length > 0) {
+    @for (building of buildingArray(); track building.id) {
+      <app-building-card
+        [id]="'building-' + building.id"
+        class="cursor-pointer"
+        [building]="building"
+        [selected]="building.id === selectedBuildingId()"
+        (click)="selectBuilding(building)"
+      ></app-building-card>
+    }
+    @if (isLoading) {
+      <div class="mt-1 d-flex justify-content-center building-list-loader">
+        <app-spinner-fiery></app-spinner-fiery>
+      </div>
+    }
+    @if (!areMoreBuildingAvailable()) {
+      <div class="d-flex justify-content-center p-0">
+        <p class="text-center m-0 mt-1">
+          Tous les établissements ont été chargés.
+        </p>
+      </div>
+    }
+  } @else {
     <div class="d-flex justify-content-center p-0">
       <p class="text-center m-0 mt-1">
-        Tous les établissements ont été chargés.
+        Aucun établissement n'a été trouvé dans cette zone.
       </p>
     </div>
   }
