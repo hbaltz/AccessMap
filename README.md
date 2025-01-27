@@ -1,7 +1,7 @@
 # AccessMap
 ![Logo](/AccessMap/src/assets/logo.png)
 
-Une carte interactive listant les lieux accessibles aux PMR
+Une carte interactive pour voir l'accésibilité des lieux pour les personnes en situation de handicap
 
 ## Données :
 
