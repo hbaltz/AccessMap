@@ -1,37 +1,48 @@
-@if (isVisible){
-<div
-  class="p-fixed b-25 h-50 w-20 r-0 bg-white z-1000 opacity-09 border-rounded-left-5 p-1"
->
-<i class="fa-solid fa-xmark grey cursor-pointer" title="Fermer les information" (click)="closeWindow()"></i>
+@if (isVisible) {
+  <div
+    class="p-fixed b-25 h-50 w-20 r-0 bg-white z-1000 opacity-09 border-rounded-left-5 p-1"
+  >
+    <i
+      class="fa-solid fa-xmark grey cursor-pointer"
+      aria-disabled="true"
+      titel="Fermer les informations"
+      (click)="closeWindow()"
+      (keydown)="onKeyDown($event)"
+    ></i>
 
-<div class="d-flex justify-content-center">
-    <h3 class="mt-05 text-align-center capitalize">{{ building?.name }}</h3>
-</div>
-  @if (isLoading) {
-    <div class="h-80 justify-content-center align-content-center">
-      <div class="h-30">
-        <app-spinner-fiery></app-spinner-fiery>
-      </div>
+    <div class="d-flex justify-content-center">
+      <h3 class="mt-05 text-align-center capitalize">{{ building?.name }}</h3>
     </div>
-  } @else {
-    @if (buildingDetailSectionArray && buildingDetailSectionArray.length > 0) {
-      <div class="pl-1 pr-1 overflow-y-auto h-85">
-        @for (section of buildingDetailSectionArray; track $index) {
-        <h4><i class="fa-solid fa-{{section.icon}} pr-1"></i>{{ section.title }}</h4>
-          <ul>
-            @for (label of section.labels; track label) {
-              <li>{{ label }}</li>
-            }
-          </ul>
-        }
+    @if (isLoading) {
+      <div class="h-80 justify-content-center align-content-center">
+        <div class="h-30">
+          <app-spinner-fiery></app-spinner-fiery>
+        </div>
       </div>
     } @else {
-      <div class="ustify-content-center align-content-center h-80">
-        <p class="text-align-center">
-          Aucune information concernant ce bâtiment pour le moment.
-        </p>
-      </div>
+      @if (
+        buildingDetailSectionArray && buildingDetailSectionArray.length > 0
+      ) {
+        <div class="pl-1 pr-1 overflow-y-auto h-85">
+          @for (section of buildingDetailSectionArray; track $index) {
+            <h4>
+              <i class="fa-solid fa-{{ section.icon }} pr-1"></i
+              >{{ section.title }}
+            </h4>
+            <ul>
+              @for (label of section.labels; track label) {
+                <li>{{ label }}</li>
+              }
+            </ul>
+          }
+        </div>
+      } @else {
+        <div class="ustify-content-center align-content-center h-80">
+          <p class="text-align-center">
+            Aucune information concernant ce bâtiment pour le moment.
+          </p>
+        </div>
+      }
     }
-  }
-</div>
+  </div>
 }
