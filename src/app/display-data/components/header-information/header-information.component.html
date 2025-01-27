@@ -1,14 +1,16 @@
 <p class="p-0">
-  Dans la zone actuelle, il y a {{ numberOfBuildings() }} établissements
-  référencés.
+  Dans la zone actuelle,
+  {{ numberOfBuildings() | i18nPlural: countBuildingDisplay }}
 </p>
 <p class="p-0">
-  {{ numberOfDsiplayedBuildings() }} établissements sont actuellement affichés.
-  <span
-    appTooltip="Pour des raisons de performances, tous les établissements ne sont pas chargés directement."
-  >
-    <i
-      class="fa-solid fa-circle-info light-grey cursor-help display-building-help-icon"
-    ></i>
-  </span>
+  {{ numberOfDsiplayedBuildings() | i18nPlural: countDisplayedBuildingDisplay }}
+  @if (numberOfDsiplayedBuildings() < numberOfBuildings()) {
+    <span
+      appTooltip="Pour des raisons de performances, tous les établissements ne sont pas chargés directement."
+    >
+      <i
+        class="fa-solid fa-circle-info light-grey cursor-help display-building-help-icon"
+      ></i>
+    </span>
+  }
 </p>
