@@ -15,6 +15,7 @@ import { BuildingLoadingService } from '../building-loading/building-loading.ser
 import { API_ACCESS_LIBRE } from '../../models/api-access-libre.model';
 import { MappingEquipementIcon } from './icon-mappings/equipementIcon.mapping';
 import { capitalizeFirstLetter } from '../../../common/utils/capitalize-first-letter';
+import { BuildingFilterService } from '../building-filter/building-filter.service';
 
 const NUMBER_BUILGINGS_PER_PAGE: number = 100;
 
@@ -92,8 +93,11 @@ export class BuildingDataService {
     ApiGeolocationService,
   );
   private mapService: MapService = inject(MapService);
-  private BuildingLoadingService: BuildingLoadingService = inject(
+  private buildingLoadingService: BuildingLoadingService = inject(
     BuildingLoadingService,
+  );
+  private buildingFilterService: BuildingFilterService = inject(
+    BuildingFilterService,
   );
 
   private numberOfBuildings: WritableSignal<number> = signal<number>(0);
@@ -112,14 +116,28 @@ export class BuildingDataService {
   }
 
   public getBuildings(): Observable<DATA.Building[]> {
-    return this.mapService.getBoundsSelected().pipe(
-      tap(() => this.BuildingLoadingService.hasStartLoadingBuildingData()),
-      switchMap((bounds) =>
-        this.apiGeolocationService.get_buildings_pagined(
-          NUMBER_BUILGINGS_PER_PAGE,
-          bounds,
-        ),
-      ),
+    return this.buildingFilterService.getPostalCodeFilter().pipe(
+      tap(() => this.buildingLoadingService.hasStartLoadingBuildingData()),
+      switchMap((postalCode) => {
+        if (!postalCode) {
+          return this.mapService.getBoundsSelected().pipe(
+            tap(() =>
+              this.buildingLoadingService.hasStartLoadingBuildingData(),
+            ),
+            switchMap((bounds) => {
+              return this.apiGeolocationService.get_buildings_pagined_by_bounds(
+                NUMBER_BUILGINGS_PER_PAGE,
+                bounds,
+              );
+            }),
+          );
+        } else {
+          return this.apiGeolocationService.get_buildings_pagined_by_postal_code(
+            NUMBER_BUILGINGS_PER_PAGE,
+            postalCode,
+          );
+        }
+      }),
       tap((buildingFeatureCollection) => {
         this.numberOfBuildings.set(buildingFeatureCollection.count);
         this.nextBuildingUrl.set(buildingFeatureCollection.next);
@@ -127,7 +145,7 @@ export class BuildingDataService {
       map(transormFeaturesCollectionToBuildings),
       tap((buildings) => {
         this.numberOfDisplayedBuildings.set(buildings.length);
-        this.BuildingLoadingService.hasStopLoadingBuildingData();
+        this.buildingLoadingService.hasStopLoadingBuildingData();
       }),
     );
   }
