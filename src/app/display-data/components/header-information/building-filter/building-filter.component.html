@@ -6,11 +6,23 @@
     placeholder="Code postal"
     class="mr-1 input-number-no-arrow"
   />
-  <button type="submit" [disabled]="postalCodeForm.invalid">
+  <button
+    type="submit"
+    [disabled]="postalCodeForm.invalid"
+    [class.cursor-pointer]="postalCodeForm.valid"
+  >
     <i class="fa-solid fa-magnifying-glass pr-05"></i>Rechercher
   </button>
 </form>
-
-<button (click)="reinitFilters()">
-  <i class="fa-solid fa-xmark pr-05"></i>Réinitialiser les filtres
-</button>
+@if (isFiltersActive) {
+  <div class="d-flex justify-content-end">
+    <button
+      (click)="reinitFilters()"
+      title="Réinitialiser les filtres"
+      class="cursor-pointer"
+      [disabled]="!isFiltersActive"
+    >
+      <i class="fa-solid fa-xmark pr-05"></i> Réinitialiser
+    </button>
+  </div>
+}

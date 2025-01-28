@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   NonNullableFormBuilder,
@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { BuildingFilterService } from '../../../services/building-filter/building-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-building-filter',
@@ -13,7 +14,7 @@ import { BuildingFilterService } from '../../../services/building-filter/buildin
   templateUrl: './building-filter.component.html',
   styleUrl: './building-filter.component.css',
 })
-export class BuildingFilterComponent {
+export class BuildingFilterComponent implements OnInit, OnDestroy {
   private nonNullableFormBuilder: NonNullableFormBuilder = inject(
     NonNullableFormBuilder,
   );
@@ -24,6 +25,25 @@ export class BuildingFilterComponent {
   public postalCodeForm = this.nonNullableFormBuilder.group({
     postalCode: [null, [Validators.required, Validators.pattern(/^\d{5}$/)]],
   });
+  public isFiltersActive: boolean = false;
+
+  private subscriptionArray: Subscription[] = [];
+
+  public ngOnInit(): void {
+    this.subscriptionArray.push(
+      this.buildingFilterService
+        .isFiltersActive()
+        .subscribe(
+          (isFiltersActive) => (this.isFiltersActive = isFiltersActive),
+        ),
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptionArray.forEach((subscription) =>
+      subscription.unsubscribe(),
+    );
+  }
 
   public onSubmit(): void {
     if (this.postalCodeForm.valid) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -25,5 +25,9 @@ export class BuildingFilterService {
 
   public clearPostalCodeFilter(): void {
     this.postlaCodeFilter.next(null);
+  }
+
+  public isFiltersActive(): Observable<boolean> {
+    return this.postlaCodeFilter.pipe(map((postalCode) => postalCode !== null));
   }
 }
