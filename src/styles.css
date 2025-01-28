@@ -159,6 +159,9 @@ body {
 .justify-content-center {
   justify-content: center;
 }
+.justify-content-end {
+  justify-content: end;
+}
 .align-content-center {
   align-content: center;
 }

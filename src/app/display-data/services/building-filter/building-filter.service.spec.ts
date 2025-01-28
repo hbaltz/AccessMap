@@ -71,4 +71,39 @@ describe('BuildingFilterService', () => {
       expect(result).toBeNull();
     }));
   });
+
+  describe('isFiltersActive', () => {
+    it('should return false by default (no filter active)', fakeAsync(() => {
+      let result: boolean = null!;
+      service.isFiltersActive().subscribe((isActive) => {
+        result = isActive;
+      });
+      tick();
+
+      expect(result).toBeFalse();
+    }));
+
+    it('should return true if there is an active filter', fakeAsync(() => {
+      let result: boolean = null!;
+      service.isFiltersActive().subscribe((isActive) => {
+        result = isActive;
+      });
+      service.updatePostalCodeFilter(69009);
+      tick();
+
+      expect(result).toBeTrue();
+    }));
+
+    it('should return false if the filter are cleared', fakeAsync(() => {
+      let result: boolean = null!;
+      service.isFiltersActive().subscribe((isActive) => {
+        result = isActive;
+      });
+      service.updatePostalCodeFilter(69009);
+      service.clearPostalCodeFilter();
+      tick();
+
+      expect(result).toBeFalse();
+    }));
+  });
 });
