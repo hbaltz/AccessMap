@@ -7,9 +7,9 @@
 /bazel-out
 
 # Node
-/node_modules
-npm-debug.log
-yarn-error.log
+frontend/node_modules
+frontend/npm-debug.log
+frontend/yarn-error.log
 
 # IDEs and editors
 .idea/
@@ -29,10 +29,10 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
-.sass-cache/
+frontend/.angular/cache
+frontend/.sass-cache/
 /connect.lock
-/coverage
+frontend/coverage
 /libpeerconnection.log
 testem.log
 /typings
@@ -41,7 +41,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-19.1.1/*
+frontend/19.1.1/*
 
 
-src/environments/environment.development.ts
+frontend/src/environments/environment.development.ts
