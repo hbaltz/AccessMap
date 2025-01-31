@@ -2,11 +2,13 @@
 import argparse
 from typing import Callable
 
+from accesmap.utils.argurment_parser import ConfigurableArgumentParser
+
 CMD_HANDLERS: dict[str, Callable] = {}
 
 
 def register_parser(
-    subparsers: argparse.ArgumentParser, parser: argparse.ArgumentParser
+    subparsers: argparse._SubParsersAction, parser: ConfigurableArgumentParser
 ) -> None:
     name, handler = parser.setup_parser(subparsers)
     if name in CMD_HANDLERS:
@@ -25,9 +27,9 @@ def parse_parameters(
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    register_parser(subparsers, MakeMigrations)
-    register_parser(subparsers, Migrate)
-    register_parser(subparsers, Downgrade)
+    register_parser(subparsers, MakeMigrations)  # type: ignore
+    register_parser(subparsers, Migrate)  # type: ignore
+    register_parser(subparsers, Downgrade)  # type: ignore
 
     args, unknown = parser.parse_known_args(argv)
     return vars(args), unknown, parser

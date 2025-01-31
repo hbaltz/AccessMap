@@ -7,9 +7,10 @@ from alembic import context
 
 from accesmap.app.models.buildings import Base
 
-from typing import Optional
-from sqlalchemy.schema import Table, Column
+from typing import Optional, Union
+from sqlalchemy.schema import Table, Column, SchemaItem
 from alembic.operations import MigrateOperation
+from typing_extensions import Literal
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -33,11 +34,18 @@ target_metadata = Base.metadata
 
 
 def include_object(
-    object: Table | Column | MigrateOperation,
+    object: Union[SchemaItem, Table, Column, MigrateOperation],
     name: Optional[str],
-    type_: str,
+    type_: Literal[
+        "schema",
+        "table",
+        "column",
+        "index",
+        "unique_constraint",
+        "foreign_key_constraint",
+    ],
     reflected: bool,
-    compare_to: Optional[Table | Column],
+    compare_to: Optional[Union[SchemaItem, Table, Column]],
 ) -> bool:
     """Exclude PostGIS system tables from migrations"""
     if type_ == "table" and name in ("spatial_ref_sys",):

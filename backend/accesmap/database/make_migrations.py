@@ -1,9 +1,12 @@
-from argparse import ArgumentParser
+from argparse import _SubParsersAction, ArgumentParser
+from typing import Callable
+
+from accesmap.utils.argurment_parser import ConfigurableArgumentParser
 
 
-class MakeMigrations:
+class MakeMigrations(ConfigurableArgumentParser):
     @staticmethod
-    def handle_args(args: list[str]) -> None:
+    def handle_args(args: dict) -> None:
         import os
         import argparse
         from alembic.config import Config
@@ -26,7 +29,7 @@ class MakeMigrations:
         )
 
     @staticmethod
-    def setup_parser(subparsers: ArgumentParser) -> tuple[str, callable]:
+    def setup_parser(subparsers: _SubParsersAction) -> tuple[str, Callable]:
         name = "makemigrations"
         parser = subparsers.add_parser(name, help="create migration files")
 

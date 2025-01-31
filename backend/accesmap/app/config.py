@@ -1,4 +1,4 @@
-from pydantic import PostgresDsn, computed_field
+from pydantic import computed_field
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
@@ -16,9 +16,9 @@ class Settings(BaseSettings):
     SQL_HOST: str
     SQL_DB: str
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
-    def sql_url(self) -> PostgresDsn:
+    def sql_url(self) -> MultiHostUrl:
         return MultiHostUrl.build(
             scheme="postgresql+psycopg",
             username=self.SQL_USER,
@@ -31,4 +31,4 @@ class Settings(BaseSettings):
         return f"dbname={self.SQL_DB} user={self.SQL_USER} password={self.SQL_PASSWORD} host={self.SQL_HOST} port=5432"
 
 
-settings = Settings()
+settings = Settings()  # type: ignore[call-arg]

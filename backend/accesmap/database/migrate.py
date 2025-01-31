@@ -1,7 +1,10 @@
-from argparse import ArgumentParser
+from argparse import _SubParsersAction, ArgumentParser
+from typing import Callable
+
+from accesmap.utils.argurment_parser import ConfigurableArgumentParser
 
 
-class Migrate:
+class Migrate(ConfigurableArgumentParser):
     @staticmethod
     def handle_args(args: list[str]) -> None:
         import os
@@ -27,17 +30,20 @@ class Migrate:
         command.upgrade(config, "head", tag=db_url)
 
     @staticmethod
-    def setup_parser(subparsers: ArgumentParser) -> tuple[str, callable]:
+    def setup_parser(subparsers: _SubParsersAction) -> tuple[str, Callable]:
         name = "migrate"
         subparsers.add_parser(name, help="apply the migration file to the db")
 
         return name, Migrate.handle_args
 
 
-class Downgrade:
+class Downgrade(ConfigurableArgumentParser):
     @staticmethod
     def handle_args(args: list[str]) -> None:
-        revision = args["revision"]
+        parser = ArgumentParser()
+        parser.add_argument("--revision", required=True, help="Specify the revision")
+        parsed_args = parser.parse_args(args)
+        revision = parsed_args.revision
         if revision is None:
             raise Exception("you must specify a revision(-h for help)")
 
@@ -61,7 +67,7 @@ class Downgrade:
         command.downgrade(config, revision=revision, tag=db_url)
 
     @staticmethod
-    def setup_parser(subparsers: ArgumentParser) -> tuple[str, callable]:
+    def setup_parser(subparsers: _SubParsersAction) -> tuple[str, Callable]:
         name = "downgrade"
         subparsers.add_parser(name, help="downgrade the db to a specific version")
 

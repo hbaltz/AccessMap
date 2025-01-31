@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-import sqlalchemy.ext.declarative
+from sqlalchemy.orm import declarative_base
 from geoalchemy2 import Geometry
 
 from sqlalchemy import Column, String, Index
@@ -14,7 +14,7 @@ meta = MetaData(
         "pk": "pk_%(table_name)s",
     }
 )
-Base = sqlalchemy.ext.declarative.declarative_base(metadata=meta)
+Base = declarative_base(metadata=meta)
 
 
 class Centre(Base):
