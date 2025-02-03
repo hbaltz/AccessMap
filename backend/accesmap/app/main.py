@@ -7,7 +7,7 @@ from fastapi import FastAPI, Depends
 from psycopg_pool import AsyncConnectionPool
 
 from accesmap.app.config import settings as global_settings
-from accesmap.database.database import get_db
+from accesmap.app.api.buildings import router as buildings_router
 
 
 @asynccontextmanager
@@ -23,3 +23,5 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
 
 app = FastAPI(title="Acces Map API", version="0.0.1", lifespan=lifespan)
+
+app.include_router(buildings_router)

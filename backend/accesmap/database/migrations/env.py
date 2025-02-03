@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from accesmap.app.models.buildings import Base
+from accesmap.app.models.base import Base
 
 from typing import Optional, Union
 from sqlalchemy.schema import Table, Column, SchemaItem

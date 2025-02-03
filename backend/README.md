@@ -14,3 +14,10 @@
 
 ```bash
 ```
+
+## Launch application
+
+<!-- TODO: add a command in run.py -->
+```bash
+uvicorn main:app --reload
+```
