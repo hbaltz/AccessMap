@@ -1,7 +1,7 @@
-from typing import Any, Tuple, Sequence
-from sqlalchemy import MetaData, Row
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from abc import abstractmethod
+from typing import Tuple
+
+from sqlalchemy import ColumnExpressionArgument, MetaData, Select
 from sqlalchemy.orm import declarative_base
 
 meta = MetaData(
@@ -20,9 +20,10 @@ class AccessBase(Base):
     __abstract__ = True  # Mark it as abstract so it's not used directly
 
     @classmethod
-    async def get_all(
-        cls, where_conditions: list[Any], database_session: AsyncSession
-    ) -> Sequence[Row[Tuple[Any]]]:
-        _stmt = select(cls).where(*where_conditions)
-        _result = await database_session.execute(_stmt)
-        return _result.fetchall()
+    @abstractmethod
+    def get_fields_query(
+        cls,
+        where_conditions: ColumnExpressionArgument,
+    ) -> Select[Tuple]:
+        """Implements in subclasses to define create the sql query to recover the fields"""
+        pass
