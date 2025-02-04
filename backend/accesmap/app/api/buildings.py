@@ -25,6 +25,7 @@ async def get_one(
     result = await execute_query_with_error_handling(db_session, stmt, not_found_message)
     return result[0]
 
+
 @router.get(
     "/",
     response_model=List[BuildingResponse],
