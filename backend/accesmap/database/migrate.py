@@ -1,4 +1,4 @@
-from argparse import _SubParsersAction, ArgumentParser
+from argparse import ArgumentParser, _SubParsersAction
 from typing import Callable
 
 from accesmap.utils.argurment_parser import ConfigurableArgumentParser
@@ -7,11 +7,11 @@ from accesmap.utils.argurment_parser import ConfigurableArgumentParser
 class Migrate(ConfigurableArgumentParser):
     @staticmethod
     def handle_args(args: list[str]) -> None:
-        import os
         import argparse
+        import os
 
-        from alembic.config import Config
         from alembic import command
+        from alembic.config import Config
 
         from accesmap.app.config import settings as global_settings
 
@@ -47,12 +47,13 @@ class Downgrade(ConfigurableArgumentParser):
         if revision is None:
             raise Exception("you must specify a revision(-h for help)")
 
-        from accesmap.app.config import settings as global_settings
-        import os
         import argparse
+        import os
 
-        from alembic.config import Config
         from alembic import command
+        from alembic.config import Config
+
+        from accesmap.app.config import settings as global_settings
 
         db_url = str(global_settings.sql_url)
 

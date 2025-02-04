@@ -1,16 +1,13 @@
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from typing import Optional, Union
 
 from alembic import context
+from alembic.operations import MigrateOperation
+from sqlalchemy import engine_from_config, pool
+from sqlalchemy.schema import Column, SchemaItem, Table
+from typing_extensions import Literal
 
 from accesmap.app.models.base import Base
-
-from typing import Optional, Union
-from sqlalchemy.schema import Table, Column, SchemaItem
-from alembic.operations import MigrateOperation
-from typing_extensions import Literal
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -20,7 +20,7 @@ def parse_parameters(
     argv: list[str],
 ) -> tuple[dict[str, str], list[str], argparse.ArgumentParser]:
     from accesmap.database.make_migrations import MakeMigrations
-    from accesmap.database.migrate import Migrate, Downgrade
+    from accesmap.database.migrate import Downgrade, Migrate
 
     parser = argparse.ArgumentParser(
         description="run accesmap commands and tests", allow_abbrev=False

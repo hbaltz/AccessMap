@@ -1,6 +1,5 @@
-from argparse import ArgumentParser, _SubParsersAction
-
 from abc import ABC, abstractmethod
+from argparse import ArgumentParser, _SubParsersAction
 from typing import Callable
 
 

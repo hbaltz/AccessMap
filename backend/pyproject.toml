@@ -48,7 +48,7 @@ line-length = 90  # Set max line length
 target-version = "py313"  # Specify the Python version
 
 [tool.ruff.lint]
-select = ["B", "ANN", "TCH"] # Enforce explicit type annotations and type hints
+select = ["B", "ANN", "TCH", "F", "I"] # Enforce explicit type annotations and type hints
 
 [tool.mypy]
 plugins = ["sqlalchemy.ext.mypy.plugin"]

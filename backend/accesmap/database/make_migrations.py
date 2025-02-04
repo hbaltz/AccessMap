@@ -1,4 +1,4 @@
-from argparse import _SubParsersAction, ArgumentParser
+from argparse import _SubParsersAction
 from typing import Callable
 
 from accesmap.utils.argurment_parser import ConfigurableArgumentParser
@@ -7,10 +7,12 @@ from accesmap.utils.argurment_parser import ConfigurableArgumentParser
 class MakeMigrations(ConfigurableArgumentParser):
     @staticmethod
     def handle_args(args: dict) -> None:
-        import os
         import argparse
-        from alembic.config import Config
+        import os
+
         from alembic import command
+        from alembic.config import Config
+
         from accesmap.app.config import settings as global_settings
 
         this_file_directory = os.path.dirname(os.path.realpath(__file__))
