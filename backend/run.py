@@ -19,9 +19,12 @@ def register_parser(
 def parse_parameters(
     argv: list[str],
 ) -> tuple[dict[str, str], list[str], argparse.ArgumentParser]:
-    from accesmap.core.run_server import RunServer
+    from accesmap.app.run_server import RunServer
     from accesmap.database.make_migrations import MakeMigrations
     from accesmap.database.migrate import Downgrade, Migrate
+    from accesmap.utils.dev.formater import Formatter
+    from accesmap.utils.dev.linter import Linter
+    from accesmap.utils.dev.type_checker import TypeChecker
 
     parser = argparse.ArgumentParser(
         description="run accesmap commands and tests", allow_abbrev=False
@@ -32,6 +35,9 @@ def parse_parameters(
     register_parser(subparsers, MakeMigrations)  # type: ignore
     register_parser(subparsers, Migrate)  # type: ignore
     register_parser(subparsers, Downgrade)  # type: ignore
+    register_parser(subparsers, Linter)  # type: ignore
+    register_parser(subparsers, Formatter)  # type: ignore
+    register_parser(subparsers, TypeChecker)  # type: ignore
 
     args, unknown = parser.parse_known_args(argv)
     return vars(args), unknown, parser
