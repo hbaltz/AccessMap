@@ -1,20 +1,19 @@
-"""init tables
+"""Init accesmap tables Building, Acessibility, Activity
 
-Revision ID: a9f681c2273f
+Revision ID: 8edcb512bd51
 Revises:
-Create Date: 2025-02-05 16:50:59.842958
+Create Date: 2025-02-07 10:43:40.144740
 
 """
 
 from typing import Sequence, Union
 
-from alembic import op
 import geoalchemy2
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "a9f681c2273f"
+revision: str = "8edcb512bd51"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -29,11 +28,18 @@ def upgrade() -> None:
         sa.Column("icon_name", sa.String(length=256), nullable=True),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_activity")),
         sa.UniqueConstraint("id", name=op.f("uq_activity_id")),
+        sa.UniqueConstraint("name", name=op.f("uq_activity_name")),
     )
     op.create_table(
         "building",
         sa.Column("uuid", sa.String(length=36), nullable=False),
         sa.Column("name", sa.String(length=256), nullable=True),
+        sa.Column("postal_code", sa.Integer(), nullable=True),
+        sa.Column("num_street", sa.String(length=256), nullable=True),
+        sa.Column("street", sa.String(length=256), nullable=True),
+        sa.Column("city", sa.String(length=256), nullable=True),
+        sa.Column("contact_url", sa.String(length=256), nullable=True),
+        sa.Column("website_url", sa.String(length=256), nullable=True),
         sa.Column(
             "gps_coord",
             geoalchemy2.types.Geometry(
@@ -43,6 +49,12 @@ def upgrade() -> None:
                 name="geometry",
             ),
             nullable=True,
+        ),
+        sa.Column("activity_id", sa.Integer(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["activity_id"],
+            ["activity.id"],
+            name=op.f("fk_building_activity_id_activity"),
         ),
         sa.PrimaryKeyConstraint("uuid", name=op.f("pk_building")),
         sa.UniqueConstraint("uuid", name=op.f("uq_building_uuid")),
@@ -69,7 +81,7 @@ def upgrade() -> None:
         sa.Column("cheminement_ext_ascenseur", sa.Boolean(), nullable=True),
         sa.Column("cheminement_ext_nombre_marches", sa.Integer(), nullable=True),
         sa.Column("cheminement_ext_reperage_marches", sa.Boolean(), nullable=True),
-        sa.Column("cheminement_ext_sens_marches", sa.Boolean(), nullable=True),
+        sa.Column("cheminement_ext_sens_marches", sa.String(length=50), nullable=True),
         sa.Column("cheminement_ext_main_courante", sa.Boolean(), nullable=True),
         sa.Column("cheminement_ext_rampe", sa.String(length=50), nullable=True),
         sa.Column("cheminement_ext_pente_presence", sa.Boolean(), nullable=True),
@@ -130,15 +142,14 @@ def upgrade() -> None:
         sa.Column("sanitaires_adaptes", sa.Boolean(), nullable=True),
         sa.Column("labels", sa.JSON(), nullable=True),
         sa.Column("labels_familles_handicap", sa.JSON(), nullable=True),
-        sa.Column("registre_url", sa.String(length=256), nullable=True),
         sa.Column("conformite", sa.Boolean(), nullable=True),
-        sa.Column("web_url", sa.String(length=256), nullable=True),
         sa.ForeignKeyConstraint(
             ["building_id"],
             ["building.uuid"],
             name=op.f("fk_accessibility_building_id_building"),
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_accessibility")),
+        sa.UniqueConstraint("building_id", name=op.f("uq_accessibility_building_id")),
         sa.UniqueConstraint("id", name=op.f("uq_accessibility_id")),
     )
     # ### end Alembic commands ###

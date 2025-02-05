@@ -22,6 +22,7 @@ def parse_parameters(
     from accesmap.app.run_server import RunServer
     from accesmap.database.make_migrations import MakeMigrations
     from accesmap.database.migrate import Downgrade, Migrate
+    from accesmap.database.populate.populate_data import PopulateData
     from accesmap.utils.dev.formater import Formatter
     from accesmap.utils.dev.linter import Linter
     from accesmap.utils.dev.type_checker import TypeChecker
@@ -35,6 +36,7 @@ def parse_parameters(
     register_parser(subparsers, MakeMigrations)  # type: ignore
     register_parser(subparsers, Migrate)  # type: ignore
     register_parser(subparsers, Downgrade)  # type: ignore
+    register_parser(subparsers, PopulateData)  # type: ignore
     register_parser(subparsers, Linter)  # type: ignore
     register_parser(subparsers, Formatter)  # type: ignore
     register_parser(subparsers, TypeChecker)  # type: ignore

@@ -27,10 +27,16 @@ class Building(AccessBase):
         primary_key=True,
     )
     name = Column(String(256))
+    postal_code = Column(Integer)
+    num_street = Column(String(256))
+    street = Column(String(256))
+    city = Column(String(256))
+    contact_url = Column(String(256))
+    website_url = Column(String(256))
     gps_coord = Column(Geometry("POINT", spatial_index=False))
     activity_id = Column(Integer, ForeignKey("activity.id"))
 
-    activitiy = relationship(  # type: ignore
+    activity = relationship(  # type: ignore
         "Activity",
     )
     accessibility = relationship("Accessibility")  # type: ignore
@@ -59,11 +65,14 @@ Index("idx_centre_gps_coord", Building.__table__.c.gps_coord, postgresql_using="
 class Activity(AccessBase):
     __tablename__ = "activity"
     id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
-    name = Column(String(256))
+    name = Column(
+        String(256),
+        unique=True,
+    )
     icon_name = Column(String(256))
 
     buildings = relationship(  # type: ignore
-        "Building", back_populates="activities"
+        "Building", back_populates="activity"
     )
 
 
@@ -71,7 +80,11 @@ class Accessibility(AccessBase):
     __tablename__ = "accessibility"
 
     id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
-    building_id = Column(String, ForeignKey("building.uuid"))
+    building_id = Column(
+        String,
+        ForeignKey("building.uuid"),
+        unique=True,
+    )
     transport_station_presence = Column(Boolean, nullable=True)
     stationnement_presence = Column(Boolean, nullable=True)
     stationnement_pmr = Column(Boolean, nullable=True)
@@ -83,7 +96,7 @@ class Accessibility(AccessBase):
     cheminement_ext_ascenseur = Column(Boolean, nullable=True)
     cheminement_ext_nombre_marches = Column(Integer, nullable=True)
     cheminement_ext_reperage_marches = Column(Boolean, nullable=True)
-    cheminement_ext_sens_marches = Column(Boolean, nullable=True)
+    cheminement_ext_sens_marches = Column(String(50), nullable=True)
     cheminement_ext_main_courante = Column(Boolean, nullable=True)
     cheminement_ext_rampe = Column(String(50), nullable=True)
     cheminement_ext_pente_presence = Column(Boolean, nullable=True)
@@ -138,8 +151,6 @@ class Accessibility(AccessBase):
     sanitaires_adaptes = Column(Boolean, nullable=True)
     labels = Column(JSON, nullable=True)
     labels_familles_handicap = Column(JSON, nullable=True)
-    registre_url = Column(String(256), nullable=True)
     conformite = Column(Boolean, nullable=True)
-    web_url = Column(String(256), nullable=True)
 
     building = relationship("Building")  # type: ignore

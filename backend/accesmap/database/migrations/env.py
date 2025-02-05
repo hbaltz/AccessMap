@@ -7,8 +7,6 @@ from sqlalchemy import engine_from_config, pool
 from sqlalchemy.schema import Column, SchemaItem, Table
 from typing_extensions import Literal
 
-from accesmap.app.models.base import Base
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

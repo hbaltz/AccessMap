@@ -7,7 +7,7 @@ from accesmap.app.config import settings as global_settings
 engine = create_async_engine(
     global_settings.sql_url.unicode_string(),
     future=True,
-    echo=True,
+    echo=False,
 )
 
 AsyncSessionFactory = async_sessionmaker(engine, autoflush=False, expire_on_commit=False)
