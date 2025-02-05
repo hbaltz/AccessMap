@@ -10,14 +10,14 @@
 ./run.py migrate
 ```
 
-## Downgrade fdb
+## Downgrade db
 
 ```bash
+./run.py downgrade <VERSION_ID>
 ```
 
 ## Launch application
 
-<!-- TODO: add a command in run.py -->
 ```bash
-uvicorn main:app --reload
+./run.py start
 ```

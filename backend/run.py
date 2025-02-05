@@ -19,6 +19,7 @@ def register_parser(
 def parse_parameters(
     argv: list[str],
 ) -> tuple[dict[str, str], list[str], argparse.ArgumentParser]:
+    from accesmap.core.run_server import RunServer
     from accesmap.database.make_migrations import MakeMigrations
     from accesmap.database.migrate import Downgrade, Migrate
 
@@ -27,6 +28,7 @@ def parse_parameters(
     )
     subparsers = parser.add_subparsers(dest="command")
 
+    register_parser(subparsers, RunServer)  # type: ignore
     register_parser(subparsers, MakeMigrations)  # type: ignore
     register_parser(subparsers, Migrate)  # type: ignore
     register_parser(subparsers, Downgrade)  # type: ignore
