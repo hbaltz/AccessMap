@@ -1,0 +1,145 @@
+from typing import Optional, Tuple
+
+from geoalchemy2 import Geometry
+from geoalchemy2.functions import ST_AsGeoJSON
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    ColumnExpressionArgument,
+    ForeignKey,
+    Index,
+    Integer,
+    Select,
+    String,
+    select,
+)
+from sqlalchemy.orm import relationship
+
+from accesmap.app.models.base import AccessBase
+
+
+class Building(AccessBase):
+    __tablename__ = "building"
+    uuid = Column(
+        String(36),
+        unique=True,
+        primary_key=True,
+    )
+    name = Column(String(256))
+    gps_coord = Column(Geometry("POINT", spatial_index=False))
+    activity_id = Column(Integer, ForeignKey("activity.id"))
+
+    activitiy = relationship(  # type: ignore
+        "Activity",
+    )
+    accessibility = relationship("Accessibility")  # type: ignore
+
+    @classmethod
+    def get_fields_query(
+        cls,
+        where_conditions: Optional[ColumnExpressionArgument] = None,
+    ) -> Select[Tuple]:
+        query = select(
+            Building.uuid,
+            Building.name,
+            ST_AsGeoJSON(Building.gps_coord).label("gps_coord"),
+        )
+
+        if where_conditions is not None:
+            query = query.where(where_conditions)
+
+        return query
+
+
+# We add index manually so it's well detected by Alembic
+Index("idx_centre_gps_coord", Building.__table__.c.gps_coord, postgresql_using="gist")
+
+
+class Activity(AccessBase):
+    __tablename__ = "activity"
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    name = Column(String(256))
+    icon_name = Column(String(256))
+
+    buildings = relationship(  # type: ignore
+        "Building", back_populates="activities"
+    )
+
+
+class Accessibility(AccessBase):
+    __tablename__ = "accessibility"
+
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    building_id = Column(String, ForeignKey("building.uuid"))
+    transport_station_presence = Column(Boolean, nullable=True)
+    stationnement_presence = Column(Boolean, nullable=True)
+    stationnement_pmr = Column(Boolean, nullable=True)
+    stationnement_ext_presence = Column(Boolean, nullable=True)
+    stationnement_ext_pmr = Column(Boolean, nullable=True)
+    cheminement_ext_presence = Column(Boolean, nullable=True)
+    cheminement_ext_terrain_stable = Column(Boolean, nullable=True)
+    cheminement_ext_plain_pied = Column(Boolean, nullable=True)
+    cheminement_ext_ascenseur = Column(Boolean, nullable=True)
+    cheminement_ext_nombre_marches = Column(Integer, nullable=True)
+    cheminement_ext_reperage_marches = Column(Boolean, nullable=True)
+    cheminement_ext_sens_marches = Column(Boolean, nullable=True)
+    cheminement_ext_main_courante = Column(Boolean, nullable=True)
+    cheminement_ext_rampe = Column(String(50), nullable=True)
+    cheminement_ext_pente_presence = Column(Boolean, nullable=True)
+    cheminement_ext_pente_degre_difficulte = Column(String(50), nullable=True)
+    cheminement_ext_pente_longueur = Column(String(50), nullable=True)
+    cheminement_ext_devers = Column(String(50), nullable=True)
+    cheminement_ext_bande_guidage = Column(Boolean, nullable=True)
+    cheminement_ext_retrecissement = Column(Boolean, nullable=True)
+    entree_reperage = Column(Boolean, nullable=True)
+    entree_vitree = Column(Boolean, nullable=True)
+    entree_vitree_vitrophanie = Column(Boolean, nullable=True)
+    entree_plain_pied = Column(Boolean, nullable=True)
+    entree_ascenseur = Column(Boolean, nullable=True)
+    entree_marches = Column(Integer, nullable=True)
+    entree_marches_reperage = Column(Boolean, nullable=True)
+    entree_marches_main_courante = Column(Boolean, nullable=True)
+    entree_marches_rampe = Column(String(50), nullable=True)
+    entree_marches_sens = Column(String(50), nullable=True)
+    entree_dispositif_appel = Column(Boolean, nullable=True)
+    entree_dispositif_appel_type = Column(JSON, nullable=True)
+    entree_balise_sonore = Column(Boolean, nullable=True)
+    entree_aide_humaine = Column(Boolean, nullable=True)
+    entree_largeur_mini = Column(Integer, nullable=True)
+    entree_pmr = Column(Boolean, nullable=True)
+    entree_porte_presence = Column(Boolean, nullable=True)
+    entree_porte_manoeuvre = Column(String(50), nullable=True)
+    entree_porte_type = Column(String(50), nullable=True)
+    accueil_visibilite = Column(Boolean, nullable=True)
+    accueil_personnels = Column(String(50), nullable=True)
+    accueil_audiodescription_presence = Column(Boolean, nullable=True)
+    accueil_audiodescription = Column(JSON, nullable=True)
+    accueil_equipements_malentendants_presence = Column(Boolean, nullable=True)
+    accueil_equipements_malentendants = Column(JSON, nullable=True)
+    accueil_cheminement_plain_pied = Column(Boolean, nullable=True)
+    accueil_cheminement_ascenseur = Column(Boolean, nullable=True)
+    accueil_cheminement_nombre_marches = Column(Integer, nullable=True)
+    accueil_cheminement_reperage_marches = Column(Boolean, nullable=True)
+    accueil_cheminement_main_courante = Column(Boolean, nullable=True)
+    accueil_cheminement_rampe = Column(String(50), nullable=True)
+    accueil_cheminement_sens_marches = Column(String(50), nullable=True)
+    accueil_chambre_nombre_accessibles = Column(Integer, nullable=True)
+    accueil_chambre_douche_plain_pied = Column(Boolean, nullable=True)
+    accueil_chambre_douche_siege = Column(Boolean, nullable=True)
+    accueil_chambre_douche_barre_appui = Column(Boolean, nullable=True)
+    accueil_chambre_sanitaires_barre_appui = Column(Boolean, nullable=True)
+    accueil_chambre_sanitaires_espace_usage = Column(Boolean, nullable=True)
+    accueil_chambre_numero_visible = Column(Boolean, nullable=True)
+    accueil_chambre_equipement_alerte = Column(Boolean, nullable=True)
+    accueil_chambre_accompagnement = Column(Boolean, nullable=True)
+    accueil_retrecissement = Column(Boolean, nullable=True)
+    sanitaires_presence = Column(Boolean, nullable=True)
+    sanitaires_adaptes = Column(Boolean, nullable=True)
+    labels = Column(JSON, nullable=True)
+    labels_familles_handicap = Column(JSON, nullable=True)
+    registre_url = Column(String(256), nullable=True)
+    conformite = Column(Boolean, nullable=True)
+    web_url = Column(String(256), nullable=True)
+
+    building = relationship("Building")  # type: ignore

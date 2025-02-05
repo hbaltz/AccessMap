@@ -5,8 +5,8 @@ from sqlalchemy import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from accesmap.app.api.utils.execute_query import execute_query_with_error_handling
-from accesmap.app.models.buildings import Building
-from accesmap.app.schemas.buildings import BuildingResponse
+from accesmap.app.models.building import Building
+from accesmap.app.schemas.building import BuildingResponse
 from accesmap.database.database import get_db
 
 router = APIRouter(prefix="/v1/buildings")

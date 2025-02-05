@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from psycopg_pool import AsyncConnectionPool
 
-from accesmap.app.api.buildings import router as buildings_router
+from accesmap.app.api.building import router as buildings_router
 from accesmap.app.config import settings as global_settings
 
 

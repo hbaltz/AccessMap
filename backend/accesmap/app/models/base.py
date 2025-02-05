@@ -17,7 +17,7 @@ Base = declarative_base(metadata=meta)
 
 
 class AccessBase(Base):
-    __abstract__ = True  # Mark it as abstract so it's not used directly
+    __abstract__ = True
 
     @classmethod
     @abstractmethod
