@@ -1,30 +1,35 @@
-from typing import Optional, Tuple
-
 from geoalchemy2 import Geometry
-from geoalchemy2.functions import ST_AsGeoJSON
 from sqlalchemy import (
     JSON,
     Boolean,
     Column,
-    ColumnExpressionArgument,
     ForeignKey,
     Index,
     Integer,
-    Select,
+    MetaData,
     String,
-    select,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import declarative_base, relationship
 
-from accesmap.app.models.base import AccessBase
+meta = MetaData(
+    naming_convention={
+        "ix": "ix_%(column_0_label)s",
+        "uq": "uq_%(table_name)s_%(column_0_name)s",
+        "ck": "ck_%(table_name)s_%(column_0_name)s",
+        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+        "pk": "pk_%(table_name)s",
+    }
+)
+Base = declarative_base(metadata=meta)
 
 
-class Building(AccessBase):
+class Building(Base):
     __tablename__ = "building"
     uuid = Column(
         String(36),
         unique=True,
         primary_key=True,
+        index=True,
     )
     name = Column(String(256))
     postal_code = Column(Integer)
@@ -34,37 +39,19 @@ class Building(AccessBase):
     contact_url = Column(String(256))
     website_url = Column(String(256))
     gps_coord = Column(Geometry("POINT", spatial_index=False))
-    activity_id = Column(Integer, ForeignKey("activity.id"))
+    activity_id = Column(Integer, ForeignKey("activity.id"), index=True)
 
-    activity = relationship(  # type: ignore
-        "Activity",
-    )
-    accessibility = relationship("Accessibility")  # type: ignore
-
-    @classmethod
-    def get_fields_query(
-        cls,
-        where_conditions: Optional[ColumnExpressionArgument] = None,
-    ) -> Select[Tuple]:
-        query = select(
-            Building.uuid,
-            Building.name,
-            ST_AsGeoJSON(Building.gps_coord).label("gps_coord"),
-        )
-
-        if where_conditions is not None:
-            query = query.where(where_conditions)
-
-        return query
+    activity = relationship("Activity")  # type: ignore
+    accessibility = relationship("Accessibility", back_populates="building")  # type: ignore
 
 
 # We add index manually so it's well detected by Alembic
 Index("idx_centre_gps_coord", Building.__table__.c.gps_coord, postgresql_using="gist")
 
 
-class Activity(AccessBase):
+class Activity(Base):
     __tablename__ = "activity"
-    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True, index=True)
     name = Column(
         String(256),
         unique=True,
@@ -72,11 +59,11 @@ class Activity(AccessBase):
     icon_name = Column(String(256))
 
     buildings = relationship(  # type: ignore
-        "Building", back_populates="activity"
+        "Building", viewonly=True
     )
 
 
-class Accessibility(AccessBase):
+class Accessibility(Base):
     __tablename__ = "accessibility"
 
     id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
@@ -84,6 +71,7 @@ class Accessibility(AccessBase):
         String,
         ForeignKey("building.uuid"),
         unique=True,
+        index=True,
     )
     transport_station_presence = Column(Boolean, nullable=True)
     stationnement_presence = Column(Boolean, nullable=True)
@@ -153,4 +141,6 @@ class Accessibility(AccessBase):
     labels_familles_handicap = Column(JSON, nullable=True)
     conformite = Column(Boolean, nullable=True)
 
-    building = relationship("Building")  # type: ignore
+    building = relationship(  # type: ignore
+        "Building", back_populates="accessibility", overlaps="accessibility"
+    )

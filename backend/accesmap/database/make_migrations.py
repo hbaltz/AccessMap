@@ -23,7 +23,7 @@ class MakeMigrations(ConfigurableArgumentParser):
         config = Config(ini_path, ini_section="alembic")
         config.cmd_opts = argparse.Namespace()  # arguments stub
         config.set_section_option(
-            "alembic", "sqlalchemy.url", str(global_settings.sql_url)
+            "alembic", "sqlalchemy.url", str(global_settings.sql_url_pscycorg)
         )
 
         command.revision(

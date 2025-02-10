@@ -1,7 +1,7 @@
 from argparse import _SubParsersAction
 from typing import Callable
 
-from accesmap.database.database import AsyncSessionFactory
+from accesmap.database.database import async_session
 from accesmap.database.populate.data_loader import DataLoader
 from accesmap.utils.argurment_parser import ConfigurableArgumentParser
 
@@ -11,18 +11,24 @@ DEFAULT_URL = (
 
 
 async def populate_data(url: str = DEFAULT_URL) -> None:
-    async with AsyncSessionFactory() as session:
-        data_loader = DataLoader(session)
-        data = data_loader.read_csv(url)
-        print("Populating activity ...", end="")
-        activity_name_id_dict = await data_loader.populate_activity(data)
-        print("Done")
-        print("Populating building and accessibility ...", end="")
-        await data_loader.populate_building_and_accessibility(data, activity_name_id_dict)
-        print("Done")
-        print("Commit to database ...", end="")
-        await session.commit()
-        print("Done")
+    async with async_session() as conn:
+        # Start a transaction
+        async with conn.transaction():  # Begin transaction
+            try:
+                data_loader = DataLoader(conn)
+                data = data_loader.read_csv(url)
+                print("Populating activity ...", end="")
+                activity_name_id_dict = await data_loader.populate_activity(data)
+                print("Done")
+                print("Populating building and accessibility ...", end="")
+                await data_loader.populate_building_and_accessibility(
+                    data, activity_name_id_dict
+                )
+                print("Done")
+            except Exception as ex:
+                print(f"Error: {ex}")
+                # If something fails, the transaction will be rolled back automatically
+                raise
 
 
 class PopulateData(ConfigurableArgumentParser):

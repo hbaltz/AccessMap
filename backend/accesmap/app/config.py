@@ -20,6 +20,17 @@ class Settings(BaseSettings):
     @property
     def sql_url(self) -> MultiHostUrl:
         return MultiHostUrl.build(
+            scheme="postgresql",
+            username=self.SQL_USER,
+            password=self.SQL_PASSWORD,
+            host=self.SQL_HOST,
+            path=self.SQL_DB,
+        )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def sql_url_pscycorg(self) -> MultiHostUrl:
+        return MultiHostUrl.build(
             scheme="postgresql+psycopg",
             username=self.SQL_USER,
             password=self.SQL_PASSWORD,

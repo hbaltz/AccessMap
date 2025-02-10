@@ -2,22 +2,20 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from psycopg_pool import AsyncConnectionPool
 
 from accesmap.app.api.building import router as buildings_router
-from accesmap.app.config import settings as global_settings
+from accesmap.database.database import shutdown_db_con, startup_db_con
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator:
-    _conninfo = global_settings.get_conn_str()
+async def lifespan(_app: FastAPI) -> AsyncGenerator:
     try:
         # Load the async pool connection
-        app.async_pool = AsyncConnectionPool(conninfo=_conninfo)  # type: ignore[attr-defined]
+        await startup_db_con()
         yield
     finally:
         # close redis connection and release the resources
-        await app.async_pool.close()  # type: ignore[attr-defined]
+        await shutdown_db_con()
 
 
 app = FastAPI(title="Acces Map API", version="0.0.1", lifespan=lifespan)

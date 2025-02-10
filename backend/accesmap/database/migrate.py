@@ -20,7 +20,7 @@ class Migrate(ConfigurableArgumentParser):
             os.path.join(this_file_directory, "..", "..", "alembic.ini")
         )
 
-        db_url = str(global_settings.sql_url)
+        db_url = str(global_settings.sql_url_pscycorg)
 
         # create Alembic config
         config = Config(ini_path, ini_section="alembic")
