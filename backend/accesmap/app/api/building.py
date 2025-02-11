@@ -13,13 +13,19 @@ router = APIRouter(prefix="/v1/buildings")
 async def get_all_buildings(
     request: Request,
     conn: asyncpg.Connection = Depends(get_db),  # noqa
-    limit: int = Query(100, ge=1),
+    page_size: int = Query(100, ge=1),
     page: int = Query(1, ge=1),
+    postal_code: int = Query(None),
 ) -> ORJSONResponse:
-    offset = (page - 1) * limit  # Convert page number to offset
+    offset = (page - 1) * page_size  # Convert page number to offset
+
+    where_query = ""
+
+    if postal_code:
+        where_query = f" WHERE bd.postal_code = {postal_code}"
 
     # Get total count of buildings for pagination metadata
-    count_query = "SELECT COUNT(*) FROM building;"
+    count_query = f"SELECT COUNT(*) FROM building AS bd {where_query};"
     total_count = await conn.fetchval(count_query)  # Fetch single value (count)
 
     query = """
@@ -38,11 +44,17 @@ async def get_all_buildings(
             building AS bd
         INNER JOIN
             activity AS act ON act.id = bd.activity_id
+    """
+
+    if where_query:
+        query += where_query
+
+    query += """
         ORDER BY bd.uuid
         LIMIT $1 OFFSET $2;
     """
 
-    rows = await conn.fetch(query, limit, offset)
+    rows = await conn.fetch(query, page_size, offset)
 
     buildings = [
         {
@@ -58,13 +70,13 @@ async def get_all_buildings(
 
     base_url = str(request.url).split("?")[0]  # Base API URL
 
-    total_pages = math.ceil(total_count / limit) if total_count > 0 else 1
+    total_pages = math.ceil(total_count / page_size) if total_count > 0 else 1
 
     next_page = page + 1 if page < total_pages else None
     prev_page = page - 1 if page > 1 else None
 
-    next_url = f"{base_url}?limit={limit}&page={next_page}" if next_page else None
-    prev_url = f"{base_url}?limit={limit}&page={prev_page}" if prev_page else None
+    next_url = f"{base_url}?limit={page_size}&page={next_page}" if next_page else None
+    prev_url = f"{base_url}?limit={page_size}&page={prev_page}" if prev_page else None
 
     return ORJSONResponse(
         {
