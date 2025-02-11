@@ -1,4 +1,5 @@
 import math
+from urllib.parse import urlencode
 
 import asyncpg
 from fastapi import APIRouter, Depends, Query, Request
@@ -100,8 +101,19 @@ async def get_all_buildings(
     next_page = page + 1 if page < total_pages else None
     prev_page = page - 1 if page > 1 else None
 
-    next_url = f"{base_url}?limit={page_size}&page={next_page}" if next_page else None
-    prev_url = f"{base_url}?limit={page_size}&page={prev_page}" if prev_page else None
+    query_params = dict(request.query_params)
+
+    if next_page:
+        query_params.update({"page": str(next_page)})
+        next_url = f"{base_url}?{urlencode(query_params)}"
+    else:
+        next_url = None
+
+    if prev_page:
+        query_params.update({"page": str(prev_page)})
+        prev_url = f"{base_url}?{urlencode(query_params)}"
+    else:
+        prev_url = None
 
     return ORJSONResponse(
         {
