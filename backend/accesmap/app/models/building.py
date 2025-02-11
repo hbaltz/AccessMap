@@ -38,7 +38,7 @@ class Building(Base):
     city = Column(String(256))
     contact_url = Column(String(256))
     website_url = Column(String(256))
-    gps_coord = Column(Geometry("POINT", spatial_index=False))
+    gps_coord = Column(Geometry("POINT", spatial_index=False, srid=4326))
     activity_id = Column(Integer, ForeignKey("activity.id"), index=True)
 
     activity = relationship("Activity")  # type: ignore
