@@ -16,19 +16,40 @@ async def get_all_buildings(
     page_size: int = Query(100, ge=1),
     page: int = Query(1, ge=1),
     postal_code: int = Query(None),
+    zone: str = Query(
+        None,
+        description="Bounding box in format 'min_longitude,min_latitude,max_longitude,max_latitude'",
+    ),
 ) -> ORJSONResponse:
     offset = (page - 1) * page_size  # Convert page number to offset
 
-    where_query = ""
+    where_conditions: list[str] = []
+    params_where: list[int | float] = []
 
     if postal_code:
-        where_query = f" WHERE bd.postal_code = {postal_code}"
+        where_conditions.append(f"bd.postal_code = ${len(params_where) + 1}")
+        params_where.append(postal_code)
+
+    if zone:
+        try:
+            min_lon, min_lat, max_lon, max_lat = map(float, zone.split(","))
+            where_conditions.append(
+                f"ST_Within(bd.gps_coord, ST_MakeEnvelope(${len(params_where) + 1}, ${len(params_where) + 2}, ${len(params_where) + 3}, ${len(params_where) + 4}, 4326))"
+            )
+            params_where.extend([min_lon, min_lat, max_lon, max_lat])
+        except ValueError:
+            return ORJSONResponse(
+                {"error": "Invalid zone format. Use 'min_lat,min_lon,max_lat,max_lon'."},
+                status_code=400,
+            )
+
+    where_query = f" WHERE {' AND '.join(where_conditions)}" if where_conditions else ""
 
     # Get total count of buildings for pagination metadata
     count_query = f"SELECT COUNT(*) FROM building AS bd {where_query};"
-    total_count = await conn.fetchval(count_query)  # Fetch single value (count)
+    total_count = await conn.fetchval(count_query, *params_where)
 
-    query = """
+    query = f"""
         SELECT 
             bd.uuid, 
             bd.name, 
@@ -44,17 +65,12 @@ async def get_all_buildings(
             building AS bd
         INNER JOIN
             activity AS act ON act.id = bd.activity_id
-    """
-
-    if where_query:
-        query += where_query
-
-    query += """
+        {where_query}
         ORDER BY bd.uuid
-        LIMIT $1 OFFSET $2;
+        LIMIT ${len(params_where) + 1} OFFSET ${len(params_where) + 2};
     """
 
-    rows = await conn.fetch(query, page_size, offset)
+    rows = await conn.fetch(query, *params_where, page_size, offset)
 
     buildings = [
         {

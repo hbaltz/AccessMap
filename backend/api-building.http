@@ -1,3 +1,7 @@
 # GET all buildings
 GET http://127.0.0.1:8000/v1/buildings/?postal_code=57880&page_size=500
 Accept: application/json
+
+
+GET http://127.0.0.1:8000/v1/buildings/?page_size=500&zone=4.849022,44.885530,4.982661,44.963994
+Accept: application/json
