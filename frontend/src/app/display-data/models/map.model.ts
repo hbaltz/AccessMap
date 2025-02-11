@@ -6,7 +6,7 @@ export namespace MAP {
     name: string;
     icon: string;
     activite: string;
-    adress: string;
+    address: string;
     gps_coord: Position;
   }
 

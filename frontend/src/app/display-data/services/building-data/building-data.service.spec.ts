@@ -87,7 +87,7 @@ describe('BuildingDataService', () => {
           gps_coord: [5.384739, 49.163546],
           icon: 'bed',
           activite: 'Hôtel',
-          adress: '12 Rue Test 11111 TestCity',
+          address: '12 Rue Test 11111 TestCity',
           slug: 'hotel',
         },
         {
@@ -96,7 +96,7 @@ describe('BuildingDataService', () => {
           gps_coord: [6.900571, 48.275392],
           icon: 'utensils',
           activite: 'Restaurant',
-          adress: '189 Rue Mock 22222 MockCity',
+          address: '189 Rue Mock 22222 MockCity',
           slug: 'restaurant',
         },
       ];
@@ -141,7 +141,7 @@ describe('BuildingDataService', () => {
           gps_coord: [5.384739, 49.163546],
           icon: 'question',
           activite: 'Activité inconnue',
-          adress: '12 Rue Test 11111 TestCity',
+          address: '12 Rue Test 11111 TestCity',
           slug: 'hotel',
         },
       ];
@@ -192,7 +192,7 @@ describe('BuildingDataService', () => {
           gps_coord: [5.384739, 49.163546],
           icon: 'bed',
           activite: 'Hôtel',
-          adress: '12 Rue Test 11111 TestCity',
+          address: '12 Rue Test 11111 TestCity',
           slug: 'hotel',
         },
         {
@@ -201,7 +201,7 @@ describe('BuildingDataService', () => {
           gps_coord: [6.900571, 48.275392],
           icon: 'utensils',
           activite: 'Restaurant',
-          adress: '189 Rue Mock 22222 MockCity',
+          address: '189 Rue Mock 22222 MockCity',
           slug: 'restaurant',
         },
       ];
@@ -246,7 +246,7 @@ describe('BuildingDataService', () => {
           gps_coord: [5.384739, 49.163546],
           icon: 'question',
           activite: 'Activité inconnue',
-          adress: '12 Rue Test 11111 TestCity',
+          address: '12 Rue Test 11111 TestCity',
           slug: 'hotel',
         },
       ];
@@ -456,7 +456,7 @@ describe('BuildingDataService', () => {
           gps_coord: [5.384739, 49.163546],
           icon: 'bed',
           activite: 'Hôtel',
-          adress: '12 Rue Test 11111 TestCity',
+          address: '12 Rue Test 11111 TestCity',
           slug: 'hotel',
         },
         {
@@ -465,7 +465,7 @@ describe('BuildingDataService', () => {
           gps_coord: [6.900571, 48.275392],
           icon: 'utensils',
           activite: 'Restaurant',
-          adress: '189 Rue Mock 22222 MockCity',
+          address: '189 Rue Mock 22222 MockCity',
           slug: 'restaurant',
         },
       ];
@@ -530,7 +530,7 @@ describe('BuildingDataService', () => {
           gps_coord: [5.384739, 49.163546],
           icon: 'bed',
           activite: 'Hôtel',
-          adress: '12 Rue Test 11111 TestCity',
+          address: '12 Rue Test 11111 TestCity',
           slug: 'hotel',
         },
         {
@@ -539,7 +539,7 @@ describe('BuildingDataService', () => {
           gps_coord: [6.900571, 48.275392],
           icon: 'utensils',
           activite: 'Restaurant',
-          adress: '189 Rue Mock 22222 MockCity',
+          address: '189 Rue Mock 22222 MockCity',
           slug: 'restaurant',
         },
       ];

@@ -10,7 +10,7 @@ const MOCK_BUILDING: DATA.Building = {
   gps_coord: [5.384739, 49.163546],
   icon: 'bed',
   activite: 'Hôtel',
-  adress: '12 Rue Test 11111 TestCity',
+  address: '12 Rue Test 11111 TestCity',
   slug: 'hotel',
 };
 

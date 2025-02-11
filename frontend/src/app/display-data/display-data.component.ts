@@ -16,6 +16,7 @@ import { SpinnerLeakyComponent } from '../common/components/spinners/spinner-lea
 import { BuildingLoadingService } from './services/building-loading/building-loading.service';
 import { BuildingDetailsComponent } from './components/building-details/building-details.component';
 import { BuildingSelectionService } from './services/building-selection/building-selection.service';
+import { BuildingData2Service } from './services/building-data-2/building-data-2.service';
 
 @Component({
   selector: 'app-display-data',
@@ -38,6 +39,10 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
 
   private buildingDataService: BuildingDataService =
     inject(BuildingDataService);
+
+  private buildingData2Service: BuildingData2Service =
+    inject(BuildingData2Service);
+
   private buildingLoadingService: BuildingLoadingService = inject(
     BuildingLoadingService,
   );
@@ -61,8 +66,14 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.subscriptionArray.push(
+    /*  this.subscriptionArray.push(
       this.buildingDataService
+        .getBuildings()
+        .subscribe((buildings) => (this.buildingArray = buildings)),
+    ); */
+
+    this.subscriptionArray.push(
+      this.buildingData2Service
         .getBuildings()
         .subscribe((buildings) => (this.buildingArray = buildings)),
     );
@@ -73,7 +84,7 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
   }
 
   public launchNextPageLoading(): void {
-    this.buildingDataService.loadNextBuildingsPage().subscribe((buildings) => {
+    this.buildingData2Service.loadNextBuildingsPage().subscribe((buildings) => {
       this.buildingArray.push(...buildings);
       this.addedBuildingForMap = buildings;
       this.isListLoading = false;

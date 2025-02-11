@@ -87,7 +87,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private initializeMap(): void {
-    this.map = L.map('map').setView([47, 2], 6);
+    this.map = L.map('map', { preferCanvas: true }).setView([47, 2], 6);
 
     this.map.setMinZoom(MAP_MIN_ZOOM);
 
@@ -98,6 +98,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.buildingClusterData = L.markerClusterGroup({
       removeOutsideVisibleBounds: true,
+      maxClusterRadius: 60,
     });
     this.buildingClusterData.addTo(this.map);
 
@@ -140,7 +141,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
           },
         );
         marker.bindTooltip(
-          `${building.activite} - ${building.name} <br /> ${building.adress}`,
+          `${building.activite} - ${building.name} <br /> ${building.address}`,
           {
             direction: 'right',
             className: 'tooltip-building',

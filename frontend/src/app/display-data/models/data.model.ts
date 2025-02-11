@@ -7,7 +7,7 @@ export namespace DATA {
     name: string;
     icon: string;
     activite: string;
-    adress: string;
+    address: string;
     gps_coord: Position;
     slug: string; // Used in the accesslibre to get details of the building, I don't know why they don't use the uniq id.
   }

@@ -14,9 +14,9 @@ import {
 import { BuildingCardComponent } from './building-card/building-card.component';
 import { DATA } from '../../models/data.model';
 import { debounceTime, fromEvent, map, Observable, Subscription } from 'rxjs';
-import { BuildingDataService } from '../../services/building-data/building-data.service';
 import { SpinnerFieryComponent } from '../../../common/components/spinners/spinner-fiery/spinner-fiery.component';
 import { BuildingSelectionService } from '../../services/building-selection/building-selection.service';
+import { BuildingData2Service } from '../../services/building-data-2/building-data-2.service';
 
 @Component({
   selector: 'app-buildings-list',
@@ -30,8 +30,8 @@ export class BuildingsListComponent implements OnInit, OnDestroy {
 
   @Output() public loadMoreData = new EventEmitter<boolean>();
 
-  private buildingDataService: BuildingDataService =
-    inject(BuildingDataService);
+  private buildingDataService: BuildingData2Service =
+    inject(BuildingData2Service);
   private buildingSelectionService: BuildingSelectionService = inject(
     BuildingSelectionService,
   );

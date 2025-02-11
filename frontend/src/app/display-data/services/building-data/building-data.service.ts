@@ -69,7 +69,7 @@ function transormFeaturesCollectionToBuildings(
           f.properties['activite']['nom']
             ? (f.properties['activite']['nom'] as string)
             : 'Activité inconnue',
-        adress: f.properties
+        address: f.properties
           ? (f.properties['adresse'] as string)
           : 'Adresse inconnues',
         gps_coord: f.geometry.coordinates,
