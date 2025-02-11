@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     SQL_HOST: str
     SQL_DB: str
 
+    FRONTEND_URL: str
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def sql_url(self) -> MultiHostUrl:
@@ -37,6 +39,11 @@ class Settings(BaseSettings):
             host=self.SQL_HOST,
             path=self.SQL_DB,
         )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def frontend_url(self) -> str:
+        return self.FRONTEND_URL
 
     def get_conn_str(self) -> str:
         return f"dbname={self.SQL_DB} user={self.SQL_USER} password={self.SQL_PASSWORD} host={self.SQL_HOST} port=5432"
