@@ -78,7 +78,16 @@ async def get_all_buildings(
             "name": row["name"],
             "latitude": row["latitude"],
             "longitude": row["longitude"],
-            "address": f"{row['num_street']} {row['street']} {row['postal_code']} {row['city']}",
+            "address": " ".join(
+                str(value)
+                for value in [
+                    row["num_street"],
+                    row["street"],
+                    row["postal_code"],
+                    row["city"],
+                ]
+                if value
+            ),
             "activity": {"name": row["activity_name"], "icon": row["activity_icon"]},
         }
         for row in rows
