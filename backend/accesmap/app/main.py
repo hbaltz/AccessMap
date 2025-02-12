@@ -1,10 +1,11 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 
-from accesmap.app.api.building import router as buildings_router
+from accesmap.app.api.api_building import router as buildings_router
 from accesmap.app.config import settings as global_settings
 from accesmap.database.database import shutdown_db_con, startup_db_con
 
@@ -36,3 +37,8 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError) -> ORJSONResponse:
+    return ORJSONResponse(status_code=400, content={"error": str(exc)})

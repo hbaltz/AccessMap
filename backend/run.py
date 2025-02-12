@@ -26,6 +26,7 @@ def parse_parameters(
     from accesmap.utils.dev.formater import Formatter
     from accesmap.utils.dev.linter import Linter
     from accesmap.utils.dev.type_checker import TypeChecker
+    from tests.cmd_test import Test
 
     parser = argparse.ArgumentParser(
         description="run accesmap commands and tests", allow_abbrev=False
@@ -40,6 +41,7 @@ def parse_parameters(
     register_parser(subparsers, Linter)  # type: ignore
     register_parser(subparsers, Formatter)  # type: ignore
     register_parser(subparsers, TypeChecker)  # type: ignore
+    register_parser(subparsers, Test)  # type: ignore
 
     args, unknown = parser.parse_known_args(argv)
     return vars(args), unknown, parser

@@ -18,7 +18,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from accesmap.app.models.building import Building
+from accesmap.app.models.model_building import Building
 
 target_metadata = [Building.metadata]
 
