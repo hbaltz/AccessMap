@@ -2,7 +2,9 @@ import textwrap
 
 import pytest
 
-from accesmap.app.api.sql_query_builder.sql_building import build_sql_query_building_list
+from accesmap.app.api.sql_query_builder.sql_building import (
+    build_sql_query_building_list,
+)
 
 
 @pytest.mark.parametrize(

@@ -2,8 +2,18 @@ import asyncpg
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import ORJSONResponse
 
-from accesmap.app.api.formatters.formatter_building import format_bulding_list_response
-from accesmap.app.api.sql_query_builder.sql_building import build_sql_query_building_list
+from accesmap.app.api.formatters.formatter_accessibility import (
+    format_build_accessibility_response,
+)
+from accesmap.app.api.formatters.formatter_building import (
+    format_bulding_list_response,
+)
+from accesmap.app.api.sql_query_builder.sql_accessibility import (
+    build_sql_query_building_accessibility,
+)
+from accesmap.app.api.sql_query_builder.sql_building import (
+    build_sql_query_building_list,
+)
 from accesmap.database.database import get_db
 
 router = APIRouter(prefix="/v1/buildings")
@@ -35,3 +45,16 @@ async def get_all_buildings(
         page_size=page_size,
         page=page,
     )
+
+
+@router.get("/accessibility/{building_uuid}", response_class=ORJSONResponse)
+async def get_building_accessibility(
+    building_uuid: str,
+    conn: asyncpg.Connection = Depends(get_db),  # noqa
+) -> ORJSONResponse:
+    query = build_sql_query_building_accessibility()
+
+    # fetch row because building_id is unique on accessibility table
+    result = await conn.fetchrow(query, building_uuid)
+
+    return format_build_accessibility_response(row=result, building_uuid=building_uuid)
