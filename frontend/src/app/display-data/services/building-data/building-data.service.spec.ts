@@ -1,17 +1,17 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { BuildingDataService } from './building-data.service';
-import { ApiGeolocationService } from '../api/api-geolocation.service';
+import { BuildingData2Service } from './building-data.service';
+import { MAP } from '../../models/map.model';
+
 import { of } from 'rxjs';
 import { DATA } from '../../models/data.model';
 import { MapService } from '../map/map.service';
 import { asyncData } from '../../../test-utils/async-data';
-import { MAP } from '../../models/map.model';
 import { Signal } from '@angular/core';
 import { BuildingLoadingService } from '../building-loading/building-loading.service';
-import { MOCK_BUILDING_FEATURE_COLLECTION } from '../../../test-utils/mock/feature-collection-building.mock';
-import { MOCK_BUILDING_DETAILS } from '../../../test-utils/mock/building-details.mock';
 import { BuildingFilterService } from '../building-filter/building-filter.service';
+import { ApiBuildingService } from '../api/api-building.service';
+import { MOCK_BUILDING_LIST_RESPONSE } from '../../../test-utils/mock/building-response.mock';
 
 const MOCK_MAP_BOUNDS: MAP.BoxLatLng = {
   minLat: 0,
@@ -20,15 +20,13 @@ const MOCK_MAP_BOUNDS: MAP.BoxLatLng = {
   maxLng: 3,
 };
 
-describe('BuildingDataService', () => {
-  let service: BuildingDataService;
+describe('BuildingData2Service', () => {
+  let service: BuildingData2Service;
 
-  const mockApiGeolocationService: jasmine.SpyObj<ApiGeolocationService> =
-    jasmine.createSpyObj<ApiGeolocationService>('ApiGeolocationService', [
-      'get_buildings_pagined_by_bounds',
-      'get_buildings_pagined_by_postal_code',
+  const mockApiBuildingService: jasmine.SpyObj<ApiBuildingService> =
+    jasmine.createSpyObj<ApiBuildingService>('ApiBuildingService', [
+      'get_buildings_pagined',
       'get_buildings_next_page',
-      'get_building_info',
     ]);
 
   const mockBuildingLoadingService: jasmine.SpyObj<BuildingLoadingService> =
@@ -45,7 +43,7 @@ describe('BuildingDataService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: ApiGeolocationService, useValue: mockApiGeolocationService },
+        { provide: ApiBuildingService, useValue: mockApiBuildingService },
         {
           provide: BuildingLoadingService,
           useValue: mockBuildingLoadingService,
@@ -63,16 +61,14 @@ describe('BuildingDataService', () => {
       ],
     });
 
-    service = TestBed.inject(BuildingDataService);
+    service = TestBed.inject(BuildingData2Service);
   });
 
-  describe('getBuildings with bounds', () => {
-    beforeEach(() => {
+  describe('getBuildings', () => {
+    it('should call get_buildings_pagined and format the data to MAP.Building interface', fakeAsync(() => {
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(null));
-    });
-    it('should call get_buildings_pagined and format the data to MAP.Building interface', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       let resBuildingArray: DATA.Building[] = null!;
       service.getBuildings().subscribe((buildingsArray) => {
@@ -82,28 +78,36 @@ describe('BuildingDataService', () => {
 
       const expectedResult: DATA.Building[] = [
         {
-          id: '1',
-          name: 'Hotel',
-          gps_coord: [5.384739, 49.163546],
-          icon: 'bed',
-          activite: 'Hôtel',
-          address: '12 Rue Test 11111 TestCity',
-          slug: 'hotel',
+          id: '00000000-0000-0000-0000-000000000001',
+          name: 'Entreprise A',
+          icon: 'heartbeat',
+          activite: 'Bien-être',
+          address: 'Rue Anonyme, Ville A',
+          gps_coord: [6.672443, 49.190218],
         },
         {
-          id: '2',
-          name: 'Restaurant',
-          gps_coord: [6.900571, 48.275392],
-          icon: 'utensils',
-          activite: 'Restaurant',
-          address: '189 Rue Mock 22222 MockCity',
-          slug: 'restaurant',
+          id: '00000000-0000-0000-0000-000000000002',
+          name: 'Entreprise B',
+          icon: 'flower',
+          activite: 'Fleuriste',
+          address: 'Rue Anonyme, Ville B',
+          gps_coord: [6.650366, 49.181573],
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          name: 'Entreprise C',
+          icon: 'candy-cane',
+          activite: 'Chocolatier',
+          address: 'Rue Anonyme, Ville C',
+          gps_coord: [6.62967, 49.170421],
         },
       ];
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_bounds,
-      ).toHaveBeenCalledWith(100, MOCK_MAP_BOUNDS);
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalledWith(
+        500,
+        null,
+        MOCK_MAP_BOUNDS,
+      );
       expect(
         mockBuildingLoadingService.hasStartLoadingBuildingData,
       ).toHaveBeenCalled();
@@ -113,71 +117,10 @@ describe('BuildingDataService', () => {
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
-    it('should call use the default value for icon if the activite is no know', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of({
-          ...MOCK_BUILDING_FEATURE_COLLECTION,
-          features: [
-            {
-              ...MOCK_BUILDING_FEATURE_COLLECTION.features[0],
-              properties: {
-                ...MOCK_BUILDING_FEATURE_COLLECTION.features[0].properties,
-                activite: { vector_icon: 'unknown' },
-              },
-            },
-          ],
-        }),
-      );
-      let resBuildingArray: DATA.Building[] = null!;
-      service.getBuildings().subscribe((buildingsArray) => {
-        resBuildingArray = buildingsArray;
-      });
-      tick();
-
-      const expectedResult: DATA.Building[] = [
-        {
-          id: '1',
-          name: 'Hotel',
-          gps_coord: [5.384739, 49.163546],
-          icon: 'question',
-          activite: 'Activité inconnue',
-          address: '12 Rue Test 11111 TestCity',
-          slug: 'hotel',
-        },
-      ];
-
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_bounds,
-      ).toHaveBeenCalledWith(100, MOCK_MAP_BOUNDS);
-      expect(resBuildingArray).toEqual(expectedResult);
-    }));
-
-    it('should call return an empty array if the features is an empty array in the api response', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: [] }),
-      );
-      let resBuildingArray: DATA.Building[] = [];
-      service.getBuildings().subscribe((buildingsArray) => {
-        resBuildingArray = buildingsArray;
-      });
-      tick();
-
-      const expectedResult: DATA.Building[] = [];
-
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_bounds,
-      ).toHaveBeenCalledWith(100, MOCK_MAP_BOUNDS);
-      expect(resBuildingArray).toEqual(expectedResult);
-    }));
-  });
-
-  describe('getBuildings with postal code filter', () => {
-    beforeEach(() => {
+    it('should call get_buildings_pagined with the postal code', fakeAsync(() => {
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(69009));
-    });
-    it('should call get_buildings_pagined and format the data to MAP.Building interface', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       let resBuildingArray: DATA.Building[] = null!;
       service.getBuildings().subscribe((buildingsArray) => {
@@ -187,28 +130,36 @@ describe('BuildingDataService', () => {
 
       const expectedResult: DATA.Building[] = [
         {
-          id: '1',
-          name: 'Hotel',
-          gps_coord: [5.384739, 49.163546],
-          icon: 'bed',
-          activite: 'Hôtel',
-          address: '12 Rue Test 11111 TestCity',
-          slug: 'hotel',
+          id: '00000000-0000-0000-0000-000000000001',
+          name: 'Entreprise A',
+          icon: 'heartbeat',
+          activite: 'Bien-être',
+          address: 'Rue Anonyme, Ville A',
+          gps_coord: [6.672443, 49.190218],
         },
         {
-          id: '2',
-          name: 'Restaurant',
-          gps_coord: [6.900571, 48.275392],
-          icon: 'utensils',
-          activite: 'Restaurant',
-          address: '189 Rue Mock 22222 MockCity',
-          slug: 'restaurant',
+          id: '00000000-0000-0000-0000-000000000002',
+          name: 'Entreprise B',
+          icon: 'flower',
+          activite: 'Fleuriste',
+          address: 'Rue Anonyme, Ville B',
+          gps_coord: [6.650366, 49.181573],
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          name: 'Entreprise C',
+          icon: 'candy-cane',
+          activite: 'Chocolatier',
+          address: 'Rue Anonyme, Ville C',
+          gps_coord: [6.62967, 49.170421],
         },
       ];
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_postal_code,
-      ).toHaveBeenCalledWith(100, 69009);
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalledWith(
+        500,
+        69009,
+        MOCK_MAP_BOUNDS,
+      );
       expect(
         mockBuildingLoadingService.hasStartLoadingBuildingData,
       ).toHaveBeenCalled();
@@ -218,20 +169,10 @@ describe('BuildingDataService', () => {
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
-    it('should call use the default value for icon if the activite is no know', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of({
-          ...MOCK_BUILDING_FEATURE_COLLECTION,
-          features: [
-            {
-              ...MOCK_BUILDING_FEATURE_COLLECTION.features[0],
-              properties: {
-                ...MOCK_BUILDING_FEATURE_COLLECTION.features[0].properties,
-                activite: { vector_icon: 'unknown' },
-              },
-            },
-          ],
-        }),
+    it('should retrun an empty array', fakeAsync(() => {
+      mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(null));
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       let resBuildingArray: DATA.Building[] = null!;
       service.getBuildings().subscribe((buildingsArray) => {
@@ -241,25 +182,48 @@ describe('BuildingDataService', () => {
 
       const expectedResult: DATA.Building[] = [
         {
-          id: '1',
-          name: 'Hotel',
-          gps_coord: [5.384739, 49.163546],
-          icon: 'question',
-          activite: 'Activité inconnue',
-          address: '12 Rue Test 11111 TestCity',
-          slug: 'hotel',
+          id: '00000000-0000-0000-0000-000000000001',
+          name: 'Entreprise A',
+          icon: 'heartbeat',
+          activite: 'Bien-être',
+          address: 'Rue Anonyme, Ville A',
+          gps_coord: [6.672443, 49.190218],
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000002',
+          name: 'Entreprise B',
+          icon: 'flower',
+          activite: 'Fleuriste',
+          address: 'Rue Anonyme, Ville B',
+          gps_coord: [6.650366, 49.181573],
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          name: 'Entreprise C',
+          icon: 'candy-cane',
+          activite: 'Chocolatier',
+          address: 'Rue Anonyme, Ville C',
+          gps_coord: [6.62967, 49.170421],
         },
       ];
 
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalledWith(
+        500,
+        null,
+        MOCK_MAP_BOUNDS,
+      );
       expect(
-        mockApiGeolocationService.get_buildings_pagined_by_postal_code,
-      ).toHaveBeenCalledWith(100, 69009);
+        mockBuildingLoadingService.hasStartLoadingBuildingData,
+      ).toHaveBeenCalled();
+      expect(
+        mockBuildingLoadingService.hasStopLoadingBuildingData,
+      ).toHaveBeenCalled();
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
-    it('should call return an empty array if the features is an empty array in the api response', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, features: [] }),
+    it('should call return an empty array if tthe resultis an empty array in the api response', fakeAsync(() => {
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of({ ...MOCK_BUILDING_LIST_RESPONSE, results: [] }),
       );
       let resBuildingArray: DATA.Building[] = [];
       service.getBuildings().subscribe((buildingsArray) => {
@@ -269,9 +233,11 @@ describe('BuildingDataService', () => {
 
       const expectedResult: DATA.Building[] = [];
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_postal_code,
-      ).toHaveBeenCalledWith(100, 69009);
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalledWith(
+        500,
+        null,
+        MOCK_MAP_BOUNDS,
+      );
       expect(resBuildingArray).toEqual(expectedResult);
     }));
   });
@@ -279,8 +245,8 @@ describe('BuildingDataService', () => {
   describe('getnumberOfBuildings', () => {
     it('should return the number of available buildings', fakeAsync(() => {
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(null));
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       service.getBuildings().subscribe();
       tick();
@@ -288,18 +254,16 @@ describe('BuildingDataService', () => {
         service.getnumberOfBuildings();
       const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
-      const expectedResult: number = 2;
+      const expectedResult: number = 18;
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_bounds,
-      ).toHaveBeenCalled();
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalled();
       expect(resNumberOfBuildings).toEqual(expectedResult);
     }));
 
     it('should return the number of available buildings with postal code filter', fakeAsync(() => {
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(69009));
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       service.getBuildings().subscribe();
       tick();
@@ -307,11 +271,9 @@ describe('BuildingDataService', () => {
         service.getnumberOfBuildings();
       const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
-      const expectedResult: number = 2;
+      const expectedResult: number = 18;
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_postal_code,
-      ).toHaveBeenCalled();
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalled();
       expect(resNumberOfBuildings).toEqual(expectedResult);
     }));
   });
@@ -319,8 +281,8 @@ describe('BuildingDataService', () => {
   describe('getNumberOfDsiplayedBuildings', () => {
     it('should return the number of displayed buildings', fakeAsync(() => {
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(null));
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       service.getBuildings().subscribe();
       tick();
@@ -328,18 +290,16 @@ describe('BuildingDataService', () => {
         service.getNumberOfDsiplayedBuildings();
       const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
-      const expectedResult: number = 2;
+      const expectedResult: number = 3;
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_bounds,
-      ).toHaveBeenCalled();
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalled();
       expect(resNumberOfBuildings).toEqual(expectedResult);
     }));
 
     it('should return the number of displayed buildings with postal code filter', fakeAsync(() => {
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(69009));
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       service.getBuildings().subscribe();
       tick();
@@ -347,11 +307,9 @@ describe('BuildingDataService', () => {
         service.getNumberOfDsiplayedBuildings();
       const resNumberOfBuildings: number = numberOfBuildginsSignal();
 
-      const expectedResult: number = 2;
+      const expectedResult: number = 3;
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_postal_code,
-      ).toHaveBeenCalled();
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalled();
       expect(resNumberOfBuildings).toEqual(expectedResult);
     }));
   });
@@ -361,85 +319,43 @@ describe('BuildingDataService', () => {
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(null));
     });
     it('should return true if the nextBuildingUrl is not null', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       service.getBuildings().subscribe();
       tick();
       const hasNextPageSignal: Signal<boolean> = service.hasNextPage();
       const resHasNextPage: boolean = hasNextPageSignal();
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_bounds,
-      ).toHaveBeenCalled();
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalled();
       expect(resHasNextPage).toBeTrue();
     }));
 
     it('should return false if the nextBuildingUrl is null', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of({ ...MOCK_BUILDING_LIST_RESPONSE, next: null }),
       );
       service.getBuildings().subscribe();
       tick();
       const hasNextPageSignal: Signal<boolean> = service.hasNextPage();
       const resHasNextPage: boolean = hasNextPageSignal();
 
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_bounds,
-      ).toHaveBeenCalled();
-      expect(resHasNextPage).toBeFalse();
-    }));
-  });
-
-  describe('hasNextPage with postal code filter', () => {
-    beforeEach(() => {
-      mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(69009));
-    });
-    it('should return true if the nextBuildingUrl is not null', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
-      );
-      service.getBuildings().subscribe();
-      tick();
-      const hasNextPageSignal: Signal<boolean> = service.hasNextPage();
-      const resHasNextPage: boolean = hasNextPageSignal();
-
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_postal_code,
-      ).toHaveBeenCalled();
-      expect(resHasNextPage).toBeTrue();
-    }));
-
-    it('should return false if the nextBuildingUrl is null', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
-      );
-      service.getBuildings().subscribe();
-      tick();
-      const hasNextPageSignal: Signal<boolean> = service.hasNextPage();
-      const resHasNextPage: boolean = hasNextPageSignal();
-
-      expect(
-        mockApiGeolocationService.get_buildings_pagined_by_postal_code,
-      ).toHaveBeenCalled();
+      expect(mockApiBuildingService.get_buildings_pagined).toHaveBeenCalled();
       expect(resHasNextPage).toBeFalse();
     }));
   });
 
   describe('loadNextBuildingsPage', () => {
     beforeEach(() => {
-      mockApiGeolocationService.get_buildings_next_page.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_next_page.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(null));
     });
 
     it('should call get_buildings_next_page and format the data to MAP.Building interface', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
-      );
-      mockApiGeolocationService.get_buildings_next_page.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of(MOCK_BUILDING_LIST_RESPONSE),
       );
       service.getBuildings().subscribe();
       tick();
@@ -451,34 +367,40 @@ describe('BuildingDataService', () => {
 
       const expectedResult: DATA.Building[] = [
         {
-          id: '1',
-          name: 'Hotel',
-          gps_coord: [5.384739, 49.163546],
-          icon: 'bed',
-          activite: 'Hôtel',
-          address: '12 Rue Test 11111 TestCity',
-          slug: 'hotel',
+          id: '00000000-0000-0000-0000-000000000001',
+          name: 'Entreprise A',
+          icon: 'heartbeat',
+          activite: 'Bien-être',
+          address: 'Rue Anonyme, Ville A',
+          gps_coord: [6.672443, 49.190218],
         },
         {
-          id: '2',
-          name: 'Restaurant',
-          gps_coord: [6.900571, 48.275392],
-          icon: 'utensils',
-          activite: 'Restaurant',
-          address: '189 Rue Mock 22222 MockCity',
-          slug: 'restaurant',
+          id: '00000000-0000-0000-0000-000000000002',
+          name: 'Entreprise B',
+          icon: 'flower',
+          activite: 'Fleuriste',
+          address: 'Rue Anonyme, Ville B',
+          gps_coord: [6.650366, 49.181573],
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          name: 'Entreprise C',
+          icon: 'candy-cane',
+          activite: 'Chocolatier',
+          address: 'Rue Anonyme, Ville C',
+          gps_coord: [6.62967, 49.170421],
         },
       ];
 
       expect(
-        mockApiGeolocationService.get_buildings_next_page,
-      ).toHaveBeenCalledWith('https://test.com/');
+        mockApiBuildingService.get_buildings_next_page,
+      ).toHaveBeenCalledWith('http://next.test');
       expect(resBuildingArray).toEqual(expectedResult);
     }));
 
     it('should throw an error if the nextBuildingUrl is null', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_bounds.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
+      mockApiBuildingService.get_buildings_pagined.and.returnValue(
+        of({ ...MOCK_BUILDING_LIST_RESPONSE, next: null }),
       );
       service.getBuildings().subscribe();
       tick();
@@ -497,120 +419,6 @@ describe('BuildingDataService', () => {
       const expectedResult: string = 'No more buildings to load';
 
       expect(errorMessage).toEqual(expectedResult);
-    }));
-  });
-
-  describe('loadNextBuildingsPage with postal code filter', () => {
-    beforeEach(() => {
-      mockApiGeolocationService.get_buildings_next_page.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
-      );
-      mockBuildingFilterService.getPostalCodeFilter.and.returnValue(of(69009));
-    });
-
-    it('should call get_buildings_next_page and format the data to MAP.Building interface', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
-      );
-      mockApiGeolocationService.get_buildings_next_page.and.returnValue(
-        of(MOCK_BUILDING_FEATURE_COLLECTION),
-      );
-      service.getBuildings().subscribe();
-      tick();
-      let resBuildingArray: DATA.Building[] = null!;
-      service.loadNextBuildingsPage().subscribe((buildingsArray) => {
-        resBuildingArray = buildingsArray;
-      });
-      tick();
-
-      const expectedResult: DATA.Building[] = [
-        {
-          id: '1',
-          name: 'Hotel',
-          gps_coord: [5.384739, 49.163546],
-          icon: 'bed',
-          activite: 'Hôtel',
-          address: '12 Rue Test 11111 TestCity',
-          slug: 'hotel',
-        },
-        {
-          id: '2',
-          name: 'Restaurant',
-          gps_coord: [6.900571, 48.275392],
-          icon: 'utensils',
-          activite: 'Restaurant',
-          address: '189 Rue Mock 22222 MockCity',
-          slug: 'restaurant',
-        },
-      ];
-
-      expect(
-        mockApiGeolocationService.get_buildings_next_page,
-      ).toHaveBeenCalledWith('https://test.com/');
-      expect(resBuildingArray).toEqual(expectedResult);
-    }));
-
-    it('should throw an error if the nextBuildingUrl is null', fakeAsync(() => {
-      mockApiGeolocationService.get_buildings_pagined_by_postal_code.and.returnValue(
-        of({ ...MOCK_BUILDING_FEATURE_COLLECTION, next: null }),
-      );
-      service.getBuildings().subscribe();
-      tick();
-
-      let errorMessage: string = null!;
-      service.loadNextBuildingsPage().subscribe({
-        next: () => {
-          fail('Expected an error, but got data instead');
-        },
-        error: (err) => {
-          errorMessage = err.message;
-        },
-      });
-      tick();
-
-      const expectedResult: string = 'No more buildings to load';
-
-      expect(errorMessage).toEqual(expectedResult);
-    }));
-  });
-
-  describe('getBuildingDetails', () => {
-    it('should recover the detail of the building corresponding to the slug', fakeAsync(() => {
-      mockApiGeolocationService.get_building_info.and.returnValue(
-        of(MOCK_BUILDING_DETAILS),
-      );
-      let result: DATA.BuildingDetailsSection[] = null!;
-      service
-        .getBuildingDetails('the-test-ski-company-chalet-test')
-        .subscribe((buildingDetails) => {
-          result = buildingDetails;
-        });
-      tick();
-
-      const expectedResult: DATA.BuildingDetailsSection[] = [
-        {
-          title: 'Stationnement',
-          labels: ['Pas de stationnement adapté à proximité'],
-          icon: 'car',
-        },
-        {
-          title: 'Accès',
-          labels: ['Entrée de plain pied'],
-          icon: 'road',
-        },
-        {
-          title: 'Personnel',
-          labels: ['Personnel non formé'],
-          icon: 'user',
-        },
-        {
-          title: 'Inconnu',
-          labels: ['Test'],
-          icon: 'question',
-        },
-      ];
-
-      expect(result).toEqual(expectedResult);
     }));
   });
 });

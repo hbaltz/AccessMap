@@ -2,7 +2,7 @@ import { Component, inject, Signal } from '@angular/core';
 import { TooltipDirective } from '../../../common/directives/tooltip.directive';
 import { I18nPluralPipe } from '@angular/common';
 import { BuildingFilterComponent } from './building-filter/building-filter.component';
-import { BuildingData2Service } from '../../services/building-data-2/building-data-2.service';
+import { BuildingData2Service } from '../../services/building-data/building-data.service';
 
 @Component({
   selector: 'app-header-information',

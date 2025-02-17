@@ -9,8 +9,8 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { DATA } from '../../models/data.model';
-import { BuildingDataService } from '../../services/building-data/building-data.service';
 import { SpinnerFieryComponent } from '../../../common/components/spinners/spinner-fiery/spinner-fiery.component';
+import { BuildingData2Service } from '../../services/building-data/building-data.service';
 
 @Component({
   selector: 'app-building-details',
@@ -23,21 +23,20 @@ export class BuildingDetailsComponent implements OnChanges {
   @Input() public isVisible: boolean = false;
   @Output() public isVisibleChange = new EventEmitter<boolean>();
 
-  public buildingDetailSectionArray: DATA.BuildingDetailsSection[] | null =
-    null;
+  public buildingAccessbilityArray: DATA.BuildingAccessibility[] | null = null;
 
   public isLoading: boolean = false;
 
-  private buildingDataService: BuildingDataService =
-    inject(BuildingDataService);
+  private buildingDataService: BuildingData2Service =
+    inject(BuildingData2Service);
 
   public ngOnChanges(changes: SimpleChanges): void {
     if ('building' in changes && this.building) {
       this.isLoading = true;
       this.buildingDataService
-        .getBuildingDetails(this.building.slug)
-        .subscribe((buildingDetails) => {
-          this.buildingDetailSectionArray = buildingDetails;
+        .getBuildingAccessibilityById(this.building.id)
+        .subscribe((buildingAccesibilityArray) => {
+          this.buildingAccessbilityArray = buildingAccesibilityArray;
           this.isLoading = false;
         });
     }

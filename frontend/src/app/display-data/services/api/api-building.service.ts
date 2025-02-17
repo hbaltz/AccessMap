@@ -57,4 +57,12 @@ export class ApiBuildingService {
       headers: this.acceslibreHeaders,
     });
   }
+
+  public get_building_accessibility_by_id(
+    building_id: string,
+  ): Observable<API_DATA.BuildingAccessibility[]> {
+    return this.get<API_DATA.BuildingAccessibility[]>(
+      `${this.backendUrl}/v1/buildings/${building_id}/accessibility`,
+    );
+  }
 }

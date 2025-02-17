@@ -20,17 +20,18 @@
         </div>
       </div>
     } @else {
-      @if (
-        buildingDetailSectionArray && buildingDetailSectionArray.length > 0
-      ) {
+      @if (buildingAccessbilityArray && buildingAccessbilityArray.length > 0) {
         <div class="pl-1 pr-1 overflow-y-auto h-85">
-          @for (section of buildingDetailSectionArray; track $index) {
+          @for (accessibility of buildingAccessbilityArray; track $index) {
             <h4>
-              <i class="fa-solid fa-{{ section.icon }} pr-1"></i
-              >{{ section.title }}
+              <i class="fa-solid fa-{{ accessibility.icon }} pr-1"></i
+              >{{ accessibility.label }}
             </h4>
             <ul>
-              @for (label of section.labels; track label) {
+              @for (
+                label of accessibility.accessibilityInformation;
+                track label
+              ) {
                 <li>{{ label }}</li>
               }
             </ul>

@@ -6,77 +6,36 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { ApiGeolocationService } from '../api/api-geolocation.service';
-import { map, Observable, switchMap, tap, throwError } from 'rxjs';
+import {
+  combineLatest,
+  map,
+  Observable,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { DATA } from '../../models/data.model';
-import { MappingActiviteIcon } from './icon-mappings/activiteIcon.mapping';
 import { MapService } from '../map/map.service';
 import { BuildingLoadingService } from '../building-loading/building-loading.service';
-import { API_ACCESS_LIBRE } from '../../models/api-access-libre.model';
-import { MappingEquipementIcon } from './icon-mappings/equipementIcon.mapping';
 import { capitalizeFirstLetter } from '../../../common/utils/capitalize-first-letter';
+import { ApiBuildingService } from '../api/api-building.service';
+import { API_DATA } from '../../models/api-data.model';
 import { BuildingFilterService } from '../building-filter/building-filter.service';
 
-const NUMBER_BUILGINGS_PER_PAGE: number = 100;
+const NUMBER_BUILGINGS_PER_PAGE: number = 500;
 
-function getIconFromActiviteIcon(activiteIconName: string): string {
-  if (activiteIconName && activiteIconName in MappingActiviteIcon) {
-    return MappingActiviteIcon[activiteIconName];
-  } else {
-    console.error('unknow activite', activiteIconName);
-    return MappingActiviteIcon['default'];
-  }
-}
-
-function getIconFromEquipementIcon(equipementTypeName: string): string {
-  if (equipementTypeName && equipementTypeName in MappingEquipementIcon) {
-    return MappingEquipementIcon[equipementTypeName];
-  } else {
-    console.error('unknow equipement type', equipementTypeName);
-    return MappingEquipementIcon['default'];
-  }
-}
-
-function getLastUrlSegment(url: string): string {
-  const splittedUrl: string[] = url.split('/');
-  const lastChar: string = url.substring(url.length - 1);
-  if (lastChar === '/') {
-    return splittedUrl[splittedUrl.length - 2];
-  } else {
-    return splittedUrl[splittedUrl.length - 1];
-  }
-}
-
-function transormFeaturesCollectionToBuildings(
-  buildingFeatureCollection: API_ACCESS_LIBRE.FeatureCollectionResponse,
+function transormBuildingResponseToBuildings(
+  builgListResponse: API_DATA.BuildingListResponse,
 ): DATA.Building[] {
   return (
-    buildingFeatureCollection.features?.map((f) => {
+    builgListResponse.results.map((buildingResponse) => {
       return {
-        id: f.properties ? (f.properties['uuid'] as string) : '',
-        name: f.properties
-          ? capitalizeFirstLetter(f.properties['nom'] as string)
-          : 'Nom inconnu',
-        icon:
-          f.properties &&
-          f.properties['activite'] &&
-          f.properties['activite']['vector_icon']
-            ? getIconFromActiviteIcon(f.properties['activite']['vector_icon'])
-            : MappingActiviteIcon['default'],
-        activite:
-          f.properties &&
-          f.properties['activite'] &&
-          f.properties['activite']['nom']
-            ? (f.properties['activite']['nom'] as string)
-            : 'Activité inconnue',
-        address: f.properties
-          ? (f.properties['adresse'] as string)
-          : 'Adresse inconnues',
-        gps_coord: f.geometry.coordinates,
-        slug:
-          f.properties && f.properties['web_url']
-            ? getLastUrlSegment(f.properties['web_url'])
-            : '',
+        id: buildingResponse.uuid,
+        name: capitalizeFirstLetter(buildingResponse.name),
+        icon: buildingResponse.activity.icon,
+        activite: capitalizeFirstLetter(buildingResponse.activity.name),
+        address: buildingResponse.address,
+        gps_coord: [buildingResponse.longitude, buildingResponse.latitude],
       };
     }) || []
   );
@@ -88,10 +47,9 @@ function transormFeaturesCollectionToBuildings(
 @Injectable({
   providedIn: 'root',
 })
-export class BuildingDataService {
-  private apiGeolocationService: ApiGeolocationService = inject(
-    ApiGeolocationService,
-  );
+export class BuildingData2Service {
+  private apiBuildingService: ApiBuildingService = inject(ApiBuildingService);
+
   private mapService: MapService = inject(MapService);
   private buildingLoadingService: BuildingLoadingService = inject(
     BuildingLoadingService,
@@ -116,33 +74,24 @@ export class BuildingDataService {
   }
 
   public getBuildings(): Observable<DATA.Building[]> {
-    return this.buildingFilterService.getPostalCodeFilter().pipe(
+    return combineLatest([
+      this.buildingFilterService.getPostalCodeFilter(),
+      this.mapService.getBoundsSelected(),
+    ]).pipe(
       tap(() => this.buildingLoadingService.hasStartLoadingBuildingData()),
-      switchMap((postalCode) => {
-        if (!postalCode) {
-          return this.mapService.getBoundsSelected().pipe(
-            tap(() =>
-              this.buildingLoadingService.hasStartLoadingBuildingData(),
-            ),
-            switchMap((bounds) => {
-              return this.apiGeolocationService.get_buildings_pagined_by_bounds(
-                NUMBER_BUILGINGS_PER_PAGE,
-                bounds,
-              );
-            }),
-          );
-        } else {
-          return this.apiGeolocationService.get_buildings_pagined_by_postal_code(
-            NUMBER_BUILGINGS_PER_PAGE,
-            postalCode,
-          );
-        }
+      switchMap(([postalCode, bounds]) =>
+        this.apiBuildingService.get_buildings_pagined(
+          NUMBER_BUILGINGS_PER_PAGE,
+          postalCode,
+          bounds,
+        ),
+      ),
+
+      tap((builgListResponse) => {
+        this.numberOfBuildings.set(builgListResponse.total_count);
+        this.nextBuildingUrl.set(builgListResponse.next);
       }),
-      tap((buildingFeatureCollection) => {
-        this.numberOfBuildings.set(buildingFeatureCollection.count);
-        this.nextBuildingUrl.set(buildingFeatureCollection.next);
-      }),
-      map(transormFeaturesCollectionToBuildings),
+      map(transormBuildingResponseToBuildings),
       tap((buildings) => {
         this.numberOfDisplayedBuildings.set(buildings.length);
         this.buildingLoadingService.hasStopLoadingBuildingData();
@@ -156,13 +105,13 @@ export class BuildingDataService {
 
   public loadNextBuildingsPage(): Observable<DATA.Building[]> {
     if (this.hasNextPage()()) {
-      return this.apiGeolocationService
+      return this.apiBuildingService
         .get_buildings_next_page(this.nextBuildingUrl() as string)
         .pipe(
           tap((buildingFeatureCollection) => {
             this.nextBuildingUrl.set(buildingFeatureCollection.next);
           }),
-          map(transormFeaturesCollectionToBuildings),
+          map(transormBuildingResponseToBuildings),
           tap((buildings) =>
             this.numberOfDisplayedBuildings.set(
               this.numberOfDisplayedBuildings() + buildings.length,
@@ -174,19 +123,19 @@ export class BuildingDataService {
     }
   }
 
-  public getBuildingDetails(
-    slug: string,
-  ): Observable<DATA.BuildingDetailsSection[]> {
-    return this.apiGeolocationService.get_building_info(slug).pipe(
-      map((buildingsApiDetails: API_ACCESS_LIBRE.BuildingDetails) => {
-        return buildingsApiDetails.sections.map((section) => {
-          return {
-            title: capitalizeFirstLetter(section.title),
-            labels: section.labels.map((label) => capitalizeFirstLetter(label)),
-            icon: getIconFromEquipementIcon(section.title),
-          };
-        });
-      }),
-    );
+  public getBuildingAccessibilityById(
+    buildingId: string,
+  ): Observable<DATA.BuildingAccessibility[]> {
+    return this.apiBuildingService
+      .get_building_accessibility_by_id(buildingId)
+      .pipe(
+        map((buildingAccessibilityArray) => {
+          return buildingAccessibilityArray.map((buildingAccessibility) => ({
+            ...buildingAccessibility,
+            accessibilityInformation:
+              buildingAccessibility.accesbility_information,
+          }));
+        }),
+      );
   }
 }

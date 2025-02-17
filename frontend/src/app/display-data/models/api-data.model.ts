@@ -22,4 +22,10 @@ export namespace API_DATA {
     name: string;
     icon: string;
   }
+
+  export interface BuildingAccessibility {
+    label: string;
+    icon: string;
+    accesbility_information: string[];
+  }
 }

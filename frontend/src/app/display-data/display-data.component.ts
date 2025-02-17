@@ -10,13 +10,12 @@ import { MapComponent } from './components/map/map.component';
 import { BuildingsListComponent } from './components/buildings-list/buildings-list.component';
 import { Subscription } from 'rxjs';
 import { DATA } from './models/data.model';
-import { BuildingDataService } from './services/building-data/building-data.service';
 import { HeaderInformationComponent } from './components/header-information/header-information.component';
 import { SpinnerLeakyComponent } from '../common/components/spinners/spinner-leaky/spinner-leaky.component';
 import { BuildingLoadingService } from './services/building-loading/building-loading.service';
 import { BuildingDetailsComponent } from './components/building-details/building-details.component';
 import { BuildingSelectionService } from './services/building-selection/building-selection.service';
-import { BuildingData2Service } from './services/building-data-2/building-data-2.service';
+import { BuildingData2Service } from './services/building-data/building-data.service';
 
 @Component({
   selector: 'app-display-data',
@@ -36,9 +35,6 @@ export class DisplayDataComponent implements OnInit, OnDestroy {
 
   public isListLoading = false;
   public isDetailsVisible = false;
-
-  private buildingDataService: BuildingDataService =
-    inject(BuildingDataService);
 
   private buildingData2Service: BuildingData2Service =
     inject(BuildingData2Service);
