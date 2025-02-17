@@ -11,7 +11,7 @@ Accept: application/json
 GET http://127.0.0.1:8000/v1/buildings/accessibility/bc5c967f-fe01-4e72-8219-7583cd8a02dc
 Accept: application/json
 
-GET http://127.0.0.1:8000/v1/buildings/accessibility/a057a085-c753-46d5-8ec4-dd03364a5cb1 
+GET http://127.0.0.1:8000/v1/buildings/a057a085-c753-46d5-8ec4-dd03364a5cb1/accessibility
 Accept: application/json
 
 GET http://127.0.0.1:8000/v1/buildings/accessibility/00089d39-b8-4962-8cf1-48a2fda624e5

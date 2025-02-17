@@ -47,7 +47,7 @@ async def get_all_buildings(
     )
 
 
-@router.get("/accessibility/{building_uuid}", response_class=ORJSONResponse)
+@router.get("/{building_uuid}/accessibility", response_class=ORJSONResponse)
 async def get_building_accessibility(
     building_uuid: str,
     conn: asyncpg.Connection = Depends(get_db),  # noqa
